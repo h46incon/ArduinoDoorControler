@@ -86,5 +86,6 @@ extern "C" void __cxa_pure_virtual() {;}
 #include <Main.h>
 #include <ServoControl.cpp>
 #include <ServoControl.h>
+#include <SleepManager.cpp>
 #include <SleepManager.h>
 #endif
