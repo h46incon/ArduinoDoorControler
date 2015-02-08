@@ -82,5 +82,6 @@ extern "C" void __cxa_pure_virtual() {;}
 #include <ArduinoDoorControler.ino>
 #include <Main.cpp>
 #include <Main.h>
+#include <ServoControl.h>
 #include <SleepManager.h>
 #endif
