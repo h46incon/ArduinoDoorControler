@@ -16,20 +16,15 @@ int bt_IRQn = 0;    // IRQn for pin2
 // Bluetooth will keep connected state for 3 minutes. 
 // If this connection could not finish work in 3 minutes, then means some errors have happened.
 // Then need to restart the bluetooth device.
-unsigned long keep_wake_time = 1000UL * 10UL;
+unsigned long keep_wake_time = 1000UL * 180UL;
 unsigned long wake_time = 0;
 
 
-Main::Main() : sleep_manager_(bt_state_pin, bt_IRQn, led_pin)
+Main::Main() 
+: sleep_manager_(bt_state_pin, bt_IRQn, led_pin)
+, servo_control_(servo_pin, press_anger, release_anger)
 {
 
-}
-
-void detachServo()
-{
-	servo.detach();
-	//VS-2 servo will stop working if PWM is low.
-	digitalWrite(servo_pin, LOW);
 }
 
 void btSetup()
@@ -43,28 +38,6 @@ void btSetup()
 	digitalWrite(bt_enable_pin, HIGH);
 }
 
-void servoSetup()
-{
-	// Servo Init
-	// Let servo in the release anger
-	servo.attach(servo_pin);
-	servo.write(release_anger);
-	delay(2000);
-	// detach for power saving
-	// VS-2 servo will stop working if PWM is low.
-	detachServo();
-}
-
-void openDoor()
-{
-	servo.attach(servo_pin);
-	servo.write(press_anger);
-	delay(2000);
-	servo.write(release_anger);
-	delay(2000);
-	detachServo();
-}
-
 
 void Main::setup()
 {
@@ -73,7 +46,7 @@ void Main::setup()
 	digitalWrite(led_pin, HIGH);
 
 	btSetup();
-	servoSetup();
+	servo_control_.Init();
 
 	wake_time = millis();
 	sleep_manager_.TryEnterSleep();
@@ -92,7 +65,7 @@ void Main::loop()
 			// Opendoor
 		case 0x38:
 			Serial.write(0x83);
-			openDoor();
+			servo_control_.OpenDoor();
 			break;
 		}
 	}
