@@ -3,6 +3,7 @@
 
 #include "SleepManager.h"
 #include "ServoControl.h"
+#include "BTManager.h"
 
 class Main{
 public:
@@ -13,5 +14,6 @@ public:
 private:
 	SleepManager sleep_manager_;
 	ServoControl servo_control_;
+	BTManager bt_manager_;
 };
 #endif

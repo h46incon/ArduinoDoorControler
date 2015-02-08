@@ -80,6 +80,8 @@ extern "C" void __cxa_pure_virtual() {;}
 #define portInputRegister(P)
 #define portModeRegister(P)
 #include <ArduinoDoorControler.ino>
+#include <BTManager.cpp>
+#include <BTManager.h>
 #include <Main.cpp>
 #include <Main.h>
 #include <ServoControl.cpp>

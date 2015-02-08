@@ -4,14 +4,15 @@
 #include <Servo.h>
 #include <avr/sleep.h>
 
-Servo servo;
 int release_anger = 60;
 int press_anger = 10;
 int servo_pin = 9;
 int led_pin = 13;    // LED is used to stands for running or sleeping state
 int bt_enable_pin = 7;
+int bt_key_pin = 6;
 int bt_state_pin = 2;
 int bt_IRQn = 0;    // IRQn for pin2
+unsigned long bt_baud = 9600;
 
 // Bluetooth will keep connected state for 3 minutes. 
 // If this connection could not finish work in 3 minutes, then means some errors have happened.
@@ -23,21 +24,10 @@ unsigned long wake_time = 0;
 Main::Main() 
 : sleep_manager_(bt_state_pin, bt_IRQn, led_pin)
 , servo_control_(servo_pin, press_anger, release_anger)
+, bt_manager_(bt_enable_pin, bt_key_pin)
 {
 
 }
-
-void btSetup()
-{
-	// BlueTooth Setting
-	pinMode(bt_enable_pin, OUTPUT);
-	pinMode(bt_state_pin, INPUT_PULLUP);
-	// Enable uart
-	Serial.begin(9600);
-
-	digitalWrite(bt_enable_pin, HIGH);
-}
-
 
 void Main::setup()
 {
@@ -45,8 +35,9 @@ void Main::setup()
 	pinMode(led_pin, OUTPUT);
 	digitalWrite(led_pin, HIGH);
 
-	btSetup();
+	sleep_manager_.Init();
 	servo_control_.Init();
+	bt_manager_.Init(bt_baud);
 
 	wake_time = millis();
 	sleep_manager_.TryEnterSleep();
@@ -75,12 +66,7 @@ void Main::loop()
 		// Fail to enter sleep means bluetooth is still in contected state
 		// Check if it is reach the timeout
 		if (millis() - wake_time > keep_wake_time){    // Use subtraction will get correct answer even if millis() is overflowed.
-			// TODO: use AT command to restart Bluetooth
-			// Re enable Blue tooth, and sleep
-			digitalWrite(bt_enable_pin, LOW);
-			delay(2000);
-			digitalWrite(bt_enable_pin, HIGH);
-			// recode wake_time
+			bt_manager_.Reset();
 			wake_time = millis();
 		}
 	}

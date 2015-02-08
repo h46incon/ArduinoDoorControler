@@ -24,6 +24,11 @@ public:
 		}
 	}
 
+	void Init()
+	{
+		pinMode(pin_num_, INPUT_PULLUP);
+	}
+
 	bool TryEnterSleep()
 	{
 		// Do not sleep if bt is connected
