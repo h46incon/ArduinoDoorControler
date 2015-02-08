@@ -17,7 +17,7 @@ unsigned long bt_baud = 9600;
 // Bluetooth will keep connected state for 3 minutes. 
 // If this connection could not finish work in 3 minutes, then means some errors have happened.
 // Then need to restart the bluetooth device.
-unsigned long keep_wake_time = 1000UL * 180UL;
+unsigned long keep_wake_time = 1000UL * 10UL;
 unsigned long wake_time = 0;
 
 
