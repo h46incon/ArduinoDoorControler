@@ -43,17 +43,7 @@ void Main::setup()
 	wake_time = millis();
 
 	LOG("Init Completed\n");
-	unsigned char buffer[6];
-	if ( bt_manager_.GetMac(buffer) )
-	{
-		for (int i = 0; i < 6; ++i)
-		{
-			Serial.print(buffer[i], 16);
-			Serial.print(":");
-		}
-	}
-	delay(2000);
-
+	bt_manager_.GetMac(my_bt_addr_);
 	sleep_manager_.TryEnterSleep();
 }
 

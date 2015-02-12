@@ -15,5 +15,7 @@ private:
 	SleepManager sleep_manager_;
 	ServoControl servo_control_;
 	BTManager bt_manager_;
+	static const int kMacAddrSize = 6;
+	unsigned char my_bt_addr_[kMacAddrSize];
 };
 #endif

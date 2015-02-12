@@ -62,11 +62,6 @@ bool BTManager::GetMac(unsigned char buffer[kMacAddrSize])
 	return result;
 }
 
-bool BTManager::GetRemoteMac(unsigned char buffer[kMacAddrSize])
-{
-	return false;
-}
-
 bool BTManager::EnterATMode()
 {
 	digitalWrite(key_pin_, HIGH);

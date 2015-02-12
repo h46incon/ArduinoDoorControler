@@ -10,9 +10,6 @@ public:
 	bool Reset();
 	bool GetMac(unsigned char buffer[kMacAddrSize]);
 
-	void ParseMacAddr(unsigned char * buffer);
-
-	bool GetRemoteMac(unsigned char buffer[kMacAddrSize]);
 
 private:
 	enum ATRetrunState
@@ -25,8 +22,10 @@ private:
 	bool EnterATMode();
 	void EnterCommunicationMode();
 	ATRetrunState ReadATCmdReturn();
+	void ParseMacAddr(unsigned char * buffer);
 	bool AppendATReturnToBuffer();
 	void EmptySerialInput();
+
 	static ATRetrunState CheckATReturnState(const char* buffer);
 	static unsigned long HexToInt(const char* str);
 	static unsigned char HexToInt(char c);
