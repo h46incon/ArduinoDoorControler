@@ -3,16 +3,17 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include <avr/sleep.h>
+#include "Utility.h"
 
 int release_anger = 60;
 int press_anger = 10;
 int servo_pin = 9;
 int led_pin = 13;    // LED is used to stands for running or sleeping state
-int bt_enable_pin = 7;
+//int bt_enable_pin = 7;
 int bt_key_pin = 6;
 int bt_state_pin = 2;
 int bt_IRQn = 0;    // IRQn for pin2
-unsigned long bt_baud = 9600;
+unsigned long bt_baud = 9600UL;
 
 // Bluetooth will keep connected state for 3 minutes. 
 // If this connection could not finish work in 3 minutes, then means some errors have happened.
@@ -24,7 +25,7 @@ unsigned long wake_time = 0;
 Main::Main() 
 : sleep_manager_(bt_state_pin, bt_IRQn, led_pin)
 , servo_control_(servo_pin, press_anger, release_anger)
-, bt_manager_(bt_enable_pin, bt_key_pin)
+, bt_manager_( bt_key_pin, bt_baud)
 {
 
 }
@@ -37,9 +38,22 @@ void Main::setup()
 
 	sleep_manager_.Init();
 	servo_control_.Init();
-	bt_manager_.Init(bt_baud);
+	bt_manager_.Init();
 
 	wake_time = millis();
+
+	LOG("Init Completed\n");
+	unsigned char buffer[6];
+	if ( bt_manager_.GetMac(buffer) )
+	{
+		for (int i = 0; i < 6; ++i)
+		{
+			Serial.print(buffer[i], 16);
+			Serial.print(":");
+		}
+	}
+	delay(2000);
+
 	sleep_manager_.TryEnterSleep();
 }
 
@@ -66,6 +80,7 @@ void Main::loop()
 		// Fail to enter sleep means bluetooth is still in contected state
 		// Check if it is reach the timeout
 		if (millis() - wake_time > keep_wake_time){    // Use subtraction will get correct answer even if millis() is overflowed.
+			LOG("Resetting Bluetooth...\n");
 			bt_manager_.Reset();
 			wake_time = millis();
 		}

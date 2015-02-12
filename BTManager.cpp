@@ -1,43 +1,65 @@
 #include "BTManager.h"
+#include "Utility.h"
 
 #include <Arduino.h>
-BTManager::BTManager(int enable_pin, int key_pin)
-: enable_pin_(enable_pin), key_pin_(key_pin)
+BTManager::BTManager(int key_pin, unsigned long baud)
+	: key_pin_(key_pin), communicate_baud_(baud)
 {
 
 }
 
-void BTManager::Init(unsigned long baud)
+void BTManager::Init( )
 {
 	// BlueTooth Setting
-	pinMode(enable_pin_, OUTPUT);
 	pinMode(key_pin_, OUTPUT);
 
-	digitalWrite(enable_pin_, LOW);
 	EnterCommunicationMode();	
-	digitalWrite(enable_pin_, HIGH);
 
 	// Enable uart
-	Serial.begin(baud);
+	Serial.begin(communicate_baud_);
 }
 
-void BTManager::Reset()
+bool BTManager::Reset()
 {
 	if (EnterATMode()){
 		Serial.print("AT+RESET\r\n");
+		Serial.flush();
+		// Make sure command have been run
+		ReadATCmdReturn();
+		// TODO: HC-05 may enter AT mode when reset
+		EnterCommunicationMode();
+
+		return true;
 	} else{
-		// Hard reset
-		digitalWrite(enable_pin_, LOW);
-		delay(2000);
-		digitalWrite(enable_pin_, HIGH);
+		EnterCommunicationMode();
+		return false;
 	}
 
-	EnterCommunicationMode();
 }
 
 bool BTManager::GetMac(unsigned char buffer[kMacAddrSize])
 {
-	return false;
+	bool result = false;
+	if (EnterATMode())
+	{
+		EmptySerialInput();
+		Serial.print("AT+ADDR?\r\n");
+		Serial.flush();
+		if (ReadATCmdReturn() == OK){
+			ParseMacAddr(buffer);
+
+			result = true;
+		}
+		else{
+			result = false;
+		}
+	}
+	else {
+		result = false;
+	}
+
+	EnterCommunicationMode();
+	return result;
 }
 
 bool BTManager::GetRemoteMac(unsigned char buffer[kMacAddrSize])
@@ -48,9 +70,10 @@ bool BTManager::GetRemoteMac(unsigned char buffer[kMacAddrSize])
 bool BTManager::EnterATMode()
 {
 	digitalWrite(key_pin_, HIGH);
+	EmptySerialInput();
 	Serial.print("AT\r\n");
-	// TODO:
-	if (true) {
+	Serial.flush();
+	if (ReadATCmdReturn() == OK) {
 		return true;
 	}
 	else{
@@ -62,4 +85,157 @@ bool BTManager::EnterATMode()
 void BTManager::EnterCommunicationMode()
 {
 	digitalWrite(key_pin_, LOW);
+}
+
+BTManager::ATRetrunState BTManager::ReadATCmdReturn()
+{
+	avaliable_buffer_size_ = 0;
+	if ( AppendATReturnToBuffer()  == false)
+	{
+		return ERROR;
+	}
+	// Append \0 in the last of buffer
+	// Because many function of string need last \0
+	// Replace last \r 
+	if (buffer_[avaliable_buffer_size_ - 1] == '\r')
+	{
+		buffer_[avaliable_buffer_size_ - 1] = '\0';
+	}
+	// or append \0
+	else{
+		buffer_[avaliable_buffer_size_] = '\0';
+		++avaliable_buffer_size_;
+	}
+	const int first_return_size = avaliable_buffer_size_;
+
+	ATRetrunState state = CheckATReturnState(buffer_);
+	if (state != UNCOMPLETE)
+	{
+		return state;
+	}
+
+	if (AppendATReturnToBuffer() == false)
+	{
+		return ERROR;
+	}
+	else{
+		buffer_[avaliable_buffer_size_] = '\0';
+		return CheckATReturnState(buffer_ + first_return_size);
+	}
+
+}
+
+void BTManager::EmptySerialInput()
+{
+	while (Serial.available() > 0)
+	{
+		Serial.read();
+	}
+}
+
+BTManager::ATRetrunState BTManager::CheckATReturnState(const char* buffer)
+{
+	const char* OK_Return = "OK";
+	const char* ERROR_Return = "ERROR";
+	if (strncmp(buffer, OK_Return, strlen(OK_Return)) == 0){
+		return OK;
+	}
+	else if (strncmp(buffer, ERROR_Return, strlen(ERROR_Return)) == 0){
+		// Consider return error code
+		return RETURN_ERROR;
+	}
+	else {
+		return UNCOMPLETE;
+	}
+}
+
+bool BTManager::AppendATReturnToBuffer()
+{
+	int read_num = 
+		Serial.readBytesUntil('\n', 
+			buffer_ + avaliable_buffer_size_, 
+			kBufSize - avaliable_buffer_size_);
+
+	// NOTE: the last '\n' will not be read
+
+	avaliable_buffer_size_ += read_num;
+	// kBufSize is 64, it is enough for all legal return, including return error 
+	// So if read 64 byte, it must be some errors
+	if (read_num == 0 || avaliable_buffer_size_ >= kBufSize)
+	{
+		return false;
+	}
+	else{
+		return true;
+	}
+
+}
+
+unsigned long BTManager::HexToInt(const char* str)
+{
+	const char* ptr = str;
+	unsigned long result = 0;
+	while ((*ptr) != '\0' )
+	{
+		result <<= 4;
+		result |= HexToInt(*ptr);
+		++ptr;
+	}
+
+	return result;
+}
+
+unsigned char BTManager::HexToInt(char c)
+{
+	if (c >= '0' && c <= '9')
+	{
+		return (unsigned char)(c - 48);
+	}
+	else if (c >= 'A' && c <= 'B')
+	{
+		return (unsigned char)(c - 65);
+	}
+	else if (c >= 'a' && c <= 'b')
+	{
+		return (unsigned char)(c - 97);
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+void BTManager::UlToByte(unsigned long num, unsigned char* bytes, int byte_size)
+{
+	int i = byte_size - 1;
+	while (i >= 0)
+	{
+		bytes[i] = num & 0xFFUL;
+		num >>= 8;
+		--i;
+	}
+}
+
+void BTManager::ParseMacAddr(unsigned char * output)
+{
+
+	// The return is return in format: "+ADDR:1234:56:789ABC"
+	// But each section in address will delete all "0" in prefix
+
+	char* p = strtok(buffer_, ":");
+	unsigned long addr_section;
+
+	// Skip "+ADDR"
+
+	p = strtok(NULL, ":");
+	addr_section = HexToInt(p);
+	UlToByte(addr_section, output, 2);
+
+	p = strtok(NULL, ":");
+	addr_section = HexToInt(p);
+	UlToByte(addr_section, output + 2, 1);
+
+	p = strtok(NULL, ":");
+	addr_section = HexToInt(p);
+	UlToByte(addr_section, output + 3, 3);
 }
