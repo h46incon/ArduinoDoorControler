@@ -184,15 +184,15 @@ unsigned char BTManager::HexToInt(char c)
 {
 	if (c >= '0' && c <= '9')
 	{
-		return (unsigned char)(c - 48);
+		return (unsigned char)(c - '0');
 	}
-	else if (c >= 'A' && c <= 'B')
+	else if (c >= 'A' && c <= 'Z')
 	{
-		return (unsigned char)(c - 65);
+		return (unsigned char)(c - 'A' + 10);
 	}
-	else if (c >= 'a' && c <= 'b')
+	else if (c >= 'a' && c <= 'z')
 	{
-		return (unsigned char)(c - 97);
+		return (unsigned char)(c - 'a' + 10);
 	}
 	else
 	{
