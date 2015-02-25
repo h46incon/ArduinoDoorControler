@@ -18,7 +18,7 @@ unsigned long bt_baud = 9600UL;
 // Bluetooth will keep connected state for 3 minutes. 
 // If this connection could not finish work in 3 minutes, then means some errors have happened.
 // Then need to restart the bluetooth device.
-unsigned long keep_wake_time = 1000UL * 10UL;
+unsigned long keep_wake_time = 1000UL * 180UL;
 unsigned long wake_time = 0;
 
 
@@ -42,7 +42,7 @@ void Main::setup()
 
 	wake_time = millis();
 
-	LOG("Init Completed\n");
+	LOG(F("Init Completed\n"));
 	bt_manager_.GetMac(my_bt_addr_);
 	sleep_manager_.TryEnterSleep();
 }
@@ -70,7 +70,7 @@ void Main::loop()
 		// Fail to enter sleep means bluetooth is still in contected state
 		// Check if it is reach the timeout
 		if (millis() - wake_time > keep_wake_time){    // Use subtraction will get correct answer even if millis() is overflowed.
-			LOG("Resetting Bluetooth...\n");
+			LOG(F("Resetting Bluetooth...\n"));
 			bt_manager_.Reset();
 			wake_time = millis();
 		}

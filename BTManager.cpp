@@ -22,7 +22,7 @@ void BTManager::Init( )
 bool BTManager::Reset()
 {
 	if (EnterATMode()){
-		Serial.print("AT+RESET\r\n");
+		Serial.print(F("AT+RESET\r\n"));
 		Serial.flush();
 		// Make sure command have been run
 		ReadATCmdReturn();
@@ -43,7 +43,7 @@ bool BTManager::GetMac(unsigned char buffer[kMacAddrSize])
 	if (EnterATMode())
 	{
 		EmptySerialInput();
-		Serial.print("AT+ADDR?\r\n");
+		Serial.print(F("AT+ADDR?\r\n"));
 		Serial.flush();
 		if (ReadATCmdReturn() == OK){
 			ParseMacAddr(buffer);
@@ -66,7 +66,7 @@ bool BTManager::EnterATMode()
 {
 	digitalWrite(key_pin_, HIGH);
 	EmptySerialInput();
-	Serial.print("AT\r\n");
+	Serial.print(F("AT\r\n"));
 	Serial.flush();
 	if (ReadATCmdReturn() == OK) {
 		return true;
