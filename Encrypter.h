@@ -18,6 +18,7 @@ using StreamSplitter::ByteBuffer;
 class Encrypter {
 public:
 	void setKey(const uint8_t* mac_addr, size_t size);
+	void setKey2(uint8_t key);
 
 	const uint8_t* getMacAddr();
 
@@ -27,12 +28,11 @@ public:
 
 private:
 	uint8_t calcKey(uint8_t random1, uint8_t ramdom2);
-
 	void doXOR(ByteBuffer& input, uint8_t key, ByteBuffer& output);
-
 	size_t bitCount(unsigned int i);
 
 	const uint8_t * macAddr;
+	uint8_t key2_;
 	size_t macAddrSize;
 };
 

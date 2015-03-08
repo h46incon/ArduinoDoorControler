@@ -13,7 +13,7 @@ namespace StreamSplitter{
 	public:
 		SubBytesFinder(const unsigned char* pattern, const int pattern_len);
 
-		typedef void(*ByteBufferHandler)(void* param_cb, ByteBuffer* byte_buffer);
+		typedef void(*ByteBufferHandler)(ByteBuffer* byte_buffer, void* param);
 
 		~SubBytesFinder();
 

@@ -83,7 +83,7 @@ ByteBuffer* Splitter::joinWithBufferPiece(ByteBuffer* inStream)
 	}
 }
 
-void Splitter::BufPieceHandler(void *param, ByteBuffer* buffer)
+void Splitter::BufPieceHandler(ByteBuffer* buffer, void* param)
 {
 	//List<byte[]> result = new LinkedList<>();
 
@@ -99,7 +99,7 @@ void Splitter::BufPieceHandler(void *param, ByteBuffer* buffer)
 	ByteBuffer* package = r_param->splitter->joinWithBufferPiece(buffer);
 	if (package != NULL)
 	{
-		r_param->package_handler(r_param->package_handler_param, *package);
+		r_param->package_handler(*package, r_param->package_handler_param);
 	}
 }
 

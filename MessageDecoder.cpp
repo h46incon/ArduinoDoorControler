@@ -54,7 +54,7 @@ void MessageDecoder::decode(ByteBuffer& input, MessageHandler handler, void* par
 
 }
 
-void StreamSplitter::MessageDecoder::PackageHandler(void* param, ByteBuffer& package)
+void StreamSplitter::MessageDecoder::PackageHandler(ByteBuffer& package, void* param)
 {
 	PackageHandlerParam* r_param = (PackageHandlerParam*)param;
 	MessageDecoder* _this = r_param->_this;
@@ -68,7 +68,7 @@ void StreamSplitter::MessageDecoder::PackageHandler(void* param, ByteBuffer& pac
 		else {
 			// TODO: Decrypt using load_buffer_
 			// TODO: And run callback
-			r_param->mes_handler(r_param->mes_handler_param, *data);
+			r_param->mes_handler(*data, r_param->mes_handler_param);
 
 			//_this->load_buffer_.clear();
 			//cipher.doFinal(data, load_buffer_);
@@ -88,13 +88,13 @@ void StreamSplitter::MessageDecoder::PackageHandler(void* param, ByteBuffer& pac
 		}
 
 }
-void MessageDecoder::decode(void* msg, int length, MessageHandler handler, void* param)
+void MessageDecoder::decode(const void* msg, size_t length, MessageHandler handler, void* param)
 {
 	ByteBuffer byteBuffer((uint8_t*)msg, length);
 	decode(byteBuffer, handler, param);
 }
 
-size_t StreamSplitter::MessageDecoder::MsgLenGetter(void* param, const void* header)
+size_t StreamSplitter::MessageDecoder::MsgLenGetter(const void* header, void* param)
 {
 	const unsigned char* r_header = (const unsigned char*)header;
 	size_t len = r_header[0] & ~(1 << 7);

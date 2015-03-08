@@ -14,10 +14,10 @@ namespace StreamSplitter{
 
 
 	public:
-		typedef void(*MessageHandler)(void* param, ByteBuffer& message);
+		typedef void(*MessageHandler)(ByteBuffer& message, void* param);
 		MessageDecoder();
 
-		void decode(void* msg, int length, MessageHandler handler, void* param);
+		void decode(const void* msg, size_t length, MessageHandler handler, void* param);
 
 		void decode(ByteBuffer& byteBuffer, MessageHandler handler, void* param);
 		void reset();
@@ -29,9 +29,9 @@ namespace StreamSplitter{
 			void* mes_handler_param;
 		};
 
-		static void PackageHandler(void* param, ByteBuffer& package);
+		static void PackageHandler(ByteBuffer& package, void* param);
 
-		static size_t MsgLenGetter(void* param, const void* header);
+		static size_t MsgLenGetter(const void* header, void* param);
 
 		ByteBuffer* getLoad(ByteBuffer& package);
 

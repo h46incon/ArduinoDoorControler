@@ -35,17 +35,17 @@ void SubBytesFinder::slip(ByteBuffer& buf, void* param_cb, ByteBufferHandler han
 			if (buf.GetPosition() >= pattern_len_ + last.GetPosition()) {
 				last.SetLimit(buf.GetPosition() - pattern_len_);
 				//result.add(last);
-				handler(param_cb, &last);
+				handler(&last, param_cb);
 			}
 
 			// Add a "null" to indicate a pattern is found
 			//result.add(null);
-			handler(param_cb, NULL);
+			handler(NULL,param_cb);
 		}
 		else {
 			last.SetLimit(buf.GetPosition());
 			// result.add(last);
-			handler(param_cb, &last);
+			handler(&last, param_cb);
 			break;
 		}
 	}

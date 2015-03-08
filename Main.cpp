@@ -68,11 +68,11 @@ void Main::loop()
 			}
 			Serial.readBytes(input_buffer, input_len);
 
-			ByteBuffer* byte_buf = device_talker_.onDataInput(input_buffer, input_len);
-			if (byte_buf != NULL)
-			{
-				Serial.write(byte_buf->GetArray() + byte_buf->GetPosition(), byte_buf->remaining());
-			}
+			//ByteBuffer* byte_buf = device_talker_.onDataInput(input_buffer, input_len);
+			//if (byte_buf != NULL)
+			//{
+			//	Serial.write(byte_buf->GetArray() + byte_buf->GetPosition(), byte_buf->remaining());
+			//}
 		}
 		else{
 			int c = Serial.read();

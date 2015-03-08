@@ -18,8 +18,8 @@ namespace StreamSplitter{
 	public:
 		// A callback when need get package's length from header
 		// LENGTH means loaded data's length, NOT including header
-		typedef size_t(*MsgLenGetter)(void* param, const void* header);
-		typedef void(*PackageHandler)(void* param, ByteBuffer& package);
+		typedef size_t(*MsgLenGetter)(const void* header, void* param);
+		typedef void(*PackageHandler)(ByteBuffer& package, void* param);
 
 		struct PackageFormat{
 			const uint8_t* startBytes;
@@ -50,7 +50,7 @@ namespace StreamSplitter{
 			void* package_handler_param;
 		};
 
-		static void BufPieceHandler(void *param, ByteBuffer* buffer);
+		static void BufPieceHandler( ByteBuffer* buffer, void* param);
 
 		ByteBuffer* joinWithBufferPiece(ByteBuffer* inStream);
 

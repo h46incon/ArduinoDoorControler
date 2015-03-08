@@ -25,7 +25,7 @@ uint8_t Encrypter::calcKey(uint8_t random1, uint8_t ramdom2)
 {
 	size_t bit_count = bitCount(random1);
 	uint8_t key1 = macAddr[bit_count % macAddrSize];
-	return (key1 ^ ramdom2);
+	return (key1 ^ ramdom2 ^ key2_);
 }
 
 bool Encrypter::decrypt(ByteBuffer& input, ByteBuffer& output)
@@ -71,4 +71,9 @@ void Encrypter::setKey(const uint8_t* mac_addr, size_t size)
 {
 	this->macAddr = mac_addr;
 	this->macAddrSize = size;
+}
+
+void Encrypter::setKey2(uint8_t key)
+{
+	key2_ = key;
 }
