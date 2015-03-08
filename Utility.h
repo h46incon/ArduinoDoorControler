@@ -17,4 +17,10 @@
 #define LOG(format, ...) 
 #endif
 
+inline void PrintCurrentHeap(){
+	Serial.print(F("Heap: "));
+	void* m = malloc(1);
+	Serial.println((int)m);
+	free(m);
+}
 #endif
