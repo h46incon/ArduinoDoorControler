@@ -33,7 +33,7 @@ ByteBuffer* Splitter::joinNormalData(ByteBuffer& inStream)
 		// do not pop header from buffer
 		if (msgBuf.tryGetMsg(package_buf_, msgHeaderLen, false)){
 			// package's length include header
-			nextPackLen = lenGetter(len_getter_param_, package_buf_) + msgHeaderLen;
+			nextPackLen = lenGetter(package_buf_, len_getter_param_) + msgHeaderLen;
 			enterNextReceivingState();
 		}
 		else {

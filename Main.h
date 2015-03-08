@@ -13,6 +13,11 @@ public:
 	void loop();
 
 private:
+	void HandlerSimpleCommand();
+	void HandlerStreamCommand();
+	static bool OpenDoorHandler(const char*key, size_t key_len, void* param);
+	static void OutPutHandler(const char* data, size_t len, void* param);
+
 	SleepManager sleep_manager_;
 	ServoControl servo_control_;
 	BTManager bt_manager_;
@@ -22,15 +27,14 @@ private:
 
 	static const int kMacAddrSize = 6;
 	unsigned char my_bt_addr_[kMacAddrSize];
+	static const size_t input_buf_size_ = 32;
+	char input_buffer_[input_buf_size_];
+
 
 	static const uint8_t cRequireSimpleResponse = 0x38;
 	static const uint8_t cDeviceSimpleResponse = 0x83;
 	static const uint8_t cEnterStreamCommunicate = 0x76;
 
-	static const uint8_t cCommandResonse = 0xFF;
-	static const uint8_t cCommandFailed = 0xFD;
-	static const uint8_t cRequireVerify = 0xbc;
-	static const uint8_t cOpenDoor = 0x69;
 
 };
 #endif

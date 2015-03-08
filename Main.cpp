@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include <avr/sleep.h>
+#include <stdlib.h>
 #include "Utility.h"
 
 int release_anger = 60;
@@ -30,62 +31,67 @@ Main::Main()
 
 }
 
+bool Main::OpenDoorHandler(const char*key, size_t key_len, void* param)
+{
+	Main* this_ = (Main*)param;
+	this_->servo_control_.OpenDoor();
+	return true;
+}
+
+
+void Main::OutPutHandler(const char* data, size_t len, void* param)
+{
+	Serial.write(data, len);
+}
+
 void Main::setup()
 {
 	// LED Setting
 	pinMode(led_pin, OUTPUT);
 	digitalWrite(led_pin, HIGH);
 
+	srand(analogRead(2));
+
 	sleep_manager_.Init();
 	servo_control_.Init();
 	bt_manager_.Init();
-
 	wake_time = millis();
 
 	LOG(F("Init Completed\n"));
 	bt_manager_.GetMac(my_bt_addr_);
+	// Note: debug
+	//my_bt_addr_[0] = 0x20;
+	//my_bt_addr_[1] = 0x13;
+	//my_bt_addr_[2] = 0x05;
+	//my_bt_addr_[3] = 0x07;
+	//my_bt_addr_[4] = 0x08;
+	//my_bt_addr_[5] = 0x29;
 
 	device_talker_.setMacAddr((uint8_t*)my_bt_addr_);
+	device_talker_.setOpenDoorHandler(OpenDoorHandler, this);
+	device_talker_.setOutPutHandler(OutPutHandler, this);
 	// TODO: set key
 	is_in_stream_mode_ = false;
+
+	// NOTE: debug
+	//Serial.println("input data");
+	//uint8_t data[] = { 0xFD, 0xB1, 0x85, 0x40, 0x00, 0x0B, 0x96, 0x97, 0x23, 0x9A, 0xB8, 0x70, 0xFF, 0x40, 0x85, 0xB1, 0xFD };
+	//device_talker_.onDataInput((const char*)data, 17);
+	// delay(2000);
 
 	sleep_manager_.TryEnterSleep();
 }
 
 void Main::loop()
 {
-	const size_t buf_size = 32;
-	char input_buffer[buf_size];
-
 	while (Serial.available() > 0)
 	{
 		if (is_in_stream_mode_)
 		{
-			size_t input_len = Serial.available();
-			if (input_len > buf_size)
-			{
-				input_len = buf_size;
-			}
-			Serial.readBytes(input_buffer, input_len);
-
-			//ByteBuffer* byte_buf = device_talker_.onDataInput(input_buffer, input_len);
-			//if (byte_buf != NULL)
-			//{
-			//	Serial.write(byte_buf->GetArray() + byte_buf->GetPosition(), byte_buf->remaining());
-			//}
+			HandlerStreamCommand();
 		}
 		else{
-			int c = Serial.read();
-			switch ((uint8_t)c){
-				// Shake hand
-			case cRequireSimpleResponse:
-				Serial.write(cDeviceSimpleResponse);
-				break;
-			case cEnterStreamCommunicate:
-				// TODO:
-				is_in_stream_mode_ = true;
-				break;
-			}
+			HandlerSimpleCommand();
 		}
 	}
 
@@ -110,4 +116,41 @@ void Main::loop()
 		// openDoor();
 	}
 
+}
+
+void Main::HandlerSimpleCommand()
+{
+	int c = Serial.read();
+	switch ((uint8_t)c){
+	case cRequireSimpleResponse:
+		// Shake hand
+		Serial.write(cDeviceSimpleResponse);
+		break;
+
+	case cEnterStreamCommunicate:
+		uint8_t random_key = rand();
+		//Note: debug
+		//uint8_t random_key = 0;
+		device_talker_.reset();
+		device_talker_.setKey2(random_key);
+		// send key back twice
+		Serial.write(random_key);
+		Serial.write(random_key);
+
+		is_in_stream_mode_ = true;
+		break;
+	}
+}
+
+void Main::HandlerStreamCommand()
+{
+	size_t input_len = Serial.available();
+	if (input_len > input_buf_size_)
+	{
+		input_len = input_buf_size_;
+	}
+	Serial.readBytes(input_buffer_, input_len);
+
+	device_talker_.onDataInput(input_buffer_, input_len);
+			// The out put will be send in OutPutHandler
 }

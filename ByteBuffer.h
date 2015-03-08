@@ -11,7 +11,7 @@ namespace StreamSplitter{
 		ByteBuffer(uint8_t* buffer, size_t size);
 
 		size_t get(void* dst, size_t len);
-		unsigned char get();
+		uint8_t get();
 		size_t put(ByteBuffer& src);
 		size_t put(const uint8_t* buffer, size_t size);
 		size_t put(uint8_t data);

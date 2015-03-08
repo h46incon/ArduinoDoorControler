@@ -96,7 +96,8 @@ void MessageDecoder::decode(const void* msg, size_t length, MessageHandler handl
 
 size_t StreamSplitter::MessageDecoder::MsgLenGetter(const void* header, void* param)
 {
-	const unsigned char* r_header = (const unsigned char*)header;
+	const uint8_t* r_header = (const uint8_t*)header;
+
 	size_t len = r_header[0] & ~(1 << 7);
 	len <<= 8;
 	len |= r_header[1];
@@ -104,6 +105,7 @@ size_t StreamSplitter::MessageDecoder::MsgLenGetter(const void* header, void* pa
 	{
 		len = max_stream_buf_len;
 	}
+
 	return len;
 }
 

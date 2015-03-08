@@ -51,6 +51,7 @@ bool Encrypter::encrypt(ByteBuffer& input, ByteBuffer& output)
 		return false;
 	}
 
+	// random seed will be set in the setup
 	uint8_t random1 = rand();
 	uint8_t random2 = rand();
 	uint8_t key = calcKey(random1, random2);

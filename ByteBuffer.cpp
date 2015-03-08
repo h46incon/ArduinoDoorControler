@@ -24,7 +24,7 @@ size_t ByteBuffer::get(void* dst, size_t len)
 	return len_get;
 }
 
-unsigned char ByteBuffer::get()
+uint8_t ByteBuffer::get()
 {
 	unsigned char r = buffer_[position_];
 	++position_;

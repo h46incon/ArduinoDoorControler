@@ -56,10 +56,9 @@ bool MessageEncoder::encode(ByteBuffer& input, ByteBuffer& output)
 	if (packData(input, output)) {
 		int endPos = output.GetPosition();
 		// Check if it contain start bytes
-		output.SetPosition(begPos + 1);
+		ByteBuffer temp(output.GetArray() + begPos + 1, endPos - begPos - 1);
 		startBytesFinder.reset();
-		if (!startBytesFinder.findIn(output)) {
-			output.SetPosition(endPos);
+		if (!startBytesFinder.findIn(temp)) {
 			return true;
 		}
 		else {

@@ -44,8 +44,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Program files\Arduino\hardware\arduino\avr\cores\arduino;D:\Program files\Arduino\hardware\arduino\avr\variants\standard;C:\Users\Administrator\Desktop\ArduinoDoorControler;D:\Program files\Arduino\libraries\Servo\src;D:\Program files\Arduino\libraries\Servo\src\utility;D:\Program files\Arduino\libraries;D:\Program files\Arduino\hardware\arduino\avr\libraries;C:\Program Files\Visual Micro\Visual Micro for Arduino\Micro Platforms\default\debuggers;C:\Users\Administrator\Documents\Arduino\libraries;d:\program files\arduino\hardware\tools\avr\avr\include\;d:\program files\arduino\hardware\tools\avr\avr\include\avr\;d:\program files\arduino\hardware\tools\avr\avr\;d:\program files\arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ForcedIncludeFiles>C:\Users\Administrator\Desktop\ArduinoDoorControler\Visual Micro\.ArduinoDoorControler.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>E:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;E:\Program Files (x86)\Arduino\hardware\arduino\avr\variants\standard;D:\WorkPlace\Code\Arduino\DoorControl;E:\Program Files (x86)\Arduino\libraries\Servo\src;E:\Program Files (x86)\Arduino\libraries\Servo\src\utility;E:\Program Files (x86)\Arduino\libraries;E:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries;E:\Program Files (x86)\Visual Micro\Visual Micro for Arduino\Micro Platforms\default\debuggers;C:\Users\Administrator\Documents\Arduino\libraries;e:\program files (x86)\arduino\hardware\tools\avr\avr\include\;e:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\;e:\program files (x86)\arduino\hardware\tools\avr\avr\;e:\program files (x86)\arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>D:\WorkPlace\Code\Arduino\DoorControl\Visual Micro\.DoorControl.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <PreprocessorDefinitions>__AVR_ATmega328p__;__AVR_ATmega328P__;ARDUINO=158;ARDUINO_MAIN;__AVR__;__avr__;F_CPU=16000000L;__cplusplus;GCC_VERSION=40301;ARDUINO_ARCH_AVR;ARDUINO_AVR_UNO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -60,6 +60,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>E:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;E:\Program Files (x86)\Arduino\hardware\arduino\avr\variants\standard;D:\WorkPlace\Code\Arduino\DoorControl;E:\Program Files (x86)\Arduino\libraries\Servo\src;E:\Program Files (x86)\Arduino\libraries\Servo\src\utility;E:\Program Files (x86)\Arduino\libraries;E:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries;E:\Program Files (x86)\Visual Micro\Visual Micro for Arduino\Micro Platforms\default\debuggers;C:\Users\Administrator\Documents\Arduino\libraries;e:\program files (x86)\arduino\hardware\tools\avr\avr\include\;e:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\;e:\program files (x86)\arduino\hardware\tools\avr\avr\;e:\program files (x86)\arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
