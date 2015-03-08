@@ -75,7 +75,7 @@ void ByteStreamBuffer::getDataFromBuffer(ByteBuffer& buf, void* dst, size_t len,
 	}
 }
 
-void ByteStreamBuffer::Clear()
+void ByteStreamBuffer::clear()
 {
 	resetBuffer(remainBuffer);
 	newInBuffer = 0;

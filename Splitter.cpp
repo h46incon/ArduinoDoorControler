@@ -45,7 +45,7 @@ ByteBuffer* Splitter::joinNormalData(ByteBuffer& inStream)
 		if (nextPackLen > package_buf_len_)
 		{
 			free(package_buf_);
-			package_buf_ = (unsigned char*)malloc(nextPackLen);
+			package_buf_ = (uint8_t*)malloc(nextPackLen);
 		}
 
 		if (msgBuf.tryGetMsg(package_buf_, nextPackLen, true)){
@@ -66,7 +66,7 @@ ByteBuffer* Splitter::joinWithBufferPiece(ByteBuffer* inStream)
 {
 	if (inStream == NULL) {
 		// is a start byte
-		this->msgBuf.Clear();
+		this->msgBuf.clear();
 		// enter next state of START_BYTES
 		this->receivingState = START_BYTES;
 		enterNextReceivingState();
@@ -135,12 +135,20 @@ startBytesFinder(format.startBytes, format.start_bytes_len)
 	package_buf_len_ = init_buf_size;
 	nextPackLen = 0;
 	receivingState = START_BYTES;
-	package_buf_ = (unsigned char*)malloc(package_buf_len_);
+	package_buf_ = (uint8_t*)malloc(package_buf_len_);
 }
 
 
 Splitter::Splitter(const PackageFormat& format) : Splitter(format, kDefaultInitBufSize)
 {
 
+}
+
+void StreamSplitter::Splitter::reset()
+{
+	msgBuf.clear();
+	receivingState = START_BYTES;
+	nextPackLen = 0;
+	startBytesFinder.reset();
 }
 

@@ -22,7 +22,7 @@ namespace StreamSplitter{
 		typedef void(*PackageHandler)(void* param, ByteBuffer& package);
 
 		struct PackageFormat{
-			const unsigned char* startBytes;
+			const uint8_t* startBytes;
 			size_t start_bytes_len;
 			size_t headerLen;
 
@@ -39,6 +39,8 @@ namespace StreamSplitter{
 		void join(void* inStream, size_t length, PackageHandler package_handler, void* param);
 
 		void join(ByteBuffer& inStream, PackageHandler package_handler, void* param);
+
+		void reset();
 
 	private:
 		struct BufPieceHandlerParam
@@ -72,7 +74,7 @@ namespace StreamSplitter{
 		const MsgLenGetter lenGetter;
 		void* len_getter_param_;
 
-		unsigned char* package_buf_;
+		uint8_t* package_buf_;
 		size_t package_buf_len_;
 		SubBytesFinder startBytesFinder;
 	};

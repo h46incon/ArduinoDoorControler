@@ -27,7 +27,7 @@ namespace StreamSplitter{
 
 		bool tryGetMsg(void* dst, size_t msgLen, bool needPop);
 
-		void Clear();
+		void clear();
 
 	private:
 		static void getDataFromBuffer(

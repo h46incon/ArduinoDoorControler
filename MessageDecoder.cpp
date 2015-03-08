@@ -107,6 +107,11 @@ size_t StreamSplitter::MessageDecoder::MsgLenGetter(void* param, const void* hea
 	return len;
 }
 
+void StreamSplitter::MessageDecoder::reset()
+{
+	streamSplitter.reset();
+}
+
 
 MessageDecoder::MessageDecoder():
 	streamSplitter(

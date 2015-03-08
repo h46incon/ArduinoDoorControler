@@ -20,6 +20,7 @@ namespace StreamSplitter{
 		void decode(void* msg, int length, MessageHandler handler, void* param);
 
 		void decode(ByteBuffer& byteBuffer, MessageHandler handler, void* param);
+		void reset();
 
 	private:
 		struct PackageHandlerParam{
@@ -41,7 +42,7 @@ namespace StreamSplitter{
 		static const size_t max_load_len = 128;
 		static const size_t max_stream_buf_len =
 			Param::packageMinLen + max_load_len;
-		unsigned char load_buffer_m_[max_load_len];
+		uint8_t load_buffer_m_[max_load_len];
 	};
 }
 #endif
