@@ -44,24 +44,48 @@ void Main::setup()
 
 	LOG(F("Init Completed\n"));
 	bt_manager_.GetMac(my_bt_addr_);
+
+	device_talker_.setMacAddr((uint8_t*)my_bt_addr_);
+	// TODO: set key
+	is_in_stream_mode_ = false;
+
 	sleep_manager_.TryEnterSleep();
 }
 
 void Main::loop()
 {
+	const size_t buf_size = 32;
+	char input_buffer[buf_size];
+
 	while (Serial.available() > 0)
 	{
-		int c = Serial.read();
-		switch (c){
-			// Shake hand
-		case 0x69:
-			Serial.write(0x96);
-			break;
-			// Opendoor
-		case 0x38:
-			Serial.write(0x83);
-			servo_control_.OpenDoor();
-			break;
+		if (is_in_stream_mode_)
+		{
+			size_t input_len = Serial.available();
+			if (input_len > buf_size)
+			{
+				input_len = buf_size;
+			}
+			Serial.readBytes(input_buffer, input_len);
+
+			ByteBuffer* byte_buf = device_talker_.onDataInput(input_buffer, input_len);
+			if (byte_buf != NULL)
+			{
+				Serial.write(byte_buf->GetArray() + byte_buf->GetPosition(), byte_buf->remaining());
+			}
+		}
+		else{
+			int c = Serial.read();
+			switch ((uint8_t)c){
+				// Shake hand
+			case cRequireSimpleResponse:
+				Serial.write(cDeviceSimpleResponse);
+				break;
+			case cEnterStreamCommunicate:
+				// TODO:
+				is_in_stream_mode_ = true;
+				break;
+			}
 		}
 	}
 
@@ -73,9 +97,13 @@ void Main::loop()
 			LOG(F("Resetting Bluetooth...\n"));
 			bt_manager_.Reset();
 			wake_time = millis();
+			device_talker_.reset();
+			is_in_stream_mode_ = false;
 		}
 	}
 	else {
+		device_talker_.reset();
+		is_in_stream_mode_ = false;
 		wake_time = millis();
 		//Serial.println("Wake up from sleeping");
 		// hand shake message may missing.
