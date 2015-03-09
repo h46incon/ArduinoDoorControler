@@ -75,6 +75,9 @@
     <ClInclude Include="DeviceTalker.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="MD5.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -115,6 +118,9 @@
     </ClCompile>
     <ClCompile Include="SubBytesFinder.cpp">
       <Filter>源文件\Package</Filter>
+    </ClCompile>
+    <ClCompile Include="MD5.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -56,11 +56,15 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>E:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;E:\Program Files (x86)\Arduino\hardware\arduino\avr\variants\standard;D:\WorkPlace\Code\Arduino\DoorControl;E:\Program Files (x86)\Arduino\libraries\Servo\src;E:\Program Files (x86)\Arduino\libraries\Servo\src\utility;E:\Program Files (x86)\Arduino\libraries;E:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries;E:\Program Files (x86)\Visual Micro\Visual Micro for Arduino\Micro Platforms\default\debuggers;C:\Users\Administrator\Documents\Arduino\libraries;e:\program files (x86)\arduino\hardware\tools\avr\avr\include\;e:\program files (x86)\arduino\hardware\tools\avr\avr\include\avr\;e:\program files (x86)\arduino\hardware\tools\avr\avr\;e:\program files (x86)\arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>D:\WorkPlace\Code\Arduino\DoorControl\Visual Micro\.DoorControl.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>__AVR_ATmega328p__;__AVR_ATmega328P__;ARDUINO=158;ARDUINO_MAIN;__AVR__;__avr__;F_CPU=16000000L;__cplusplus;GCC_VERSION=40301;ARDUINO_ARCH_AVR;ARDUINO_AVR_UNO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -81,6 +85,7 @@
     <ClInclude Include="DeviceTalker.h" />
     <ClInclude Include="Encrypter.h" />
     <ClInclude Include="Main.h" />
+    <ClInclude Include="MD5.h" />
     <ClInclude Include="MessageDecoder.h" />
     <ClInclude Include="MessageEncoder.h" />
     <ClInclude Include="Param.h" />
@@ -99,6 +104,7 @@
     <ClCompile Include="Crc32.cpp" />
     <ClCompile Include="Encrypter.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MD5.cpp" />
     <ClCompile Include="MessageDecoder.cpp" />
     <ClCompile Include="MessageEncoder.cpp" />
     <ClCompile Include="Param.cpp" />
