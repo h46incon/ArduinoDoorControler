@@ -278,13 +278,19 @@ void MD5::MD5Final(unsigned char *result, void *ctxBuf)
 
 	memset(ctx, 0, sizeof(*ctx));
 }
-unsigned char* MD5::make_hash(char *arg)
+
+void MD5::make_hash(const void* arg, size_t len, unsigned char* output)
 {
 	MD5_CTX context;
-	unsigned char * hash = (unsigned char *) malloc(16);
 	MD5Init(&context);
-	MD5Update(&context, arg, strlen(arg));
-	MD5Final(hash, &context);
+	MD5Update(&context, arg, len);
+	MD5Final(output, &context);
+}
+
+unsigned char* MD5::make_hash(char *arg)
+{
+	unsigned char * hash = (unsigned char *) malloc(16);
+	make_hash(arg, strlen(arg), hash);
 	return hash;
 }
 

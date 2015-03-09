@@ -41,6 +41,7 @@ class MD5
 public:
 	MD5();
 	static unsigned char* make_hash(char *arg);
+	static void make_hash(const void* arg, size_t len, unsigned char* output);
 	static char* make_digest(const unsigned char *digest, int len);
  	static const void *body(void *ctxBuf, const void *data, size_t size);
 	static void MD5Init(void *ctxBuf);
