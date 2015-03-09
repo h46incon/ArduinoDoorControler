@@ -88,9 +88,11 @@ extern "C" void __cxa_pure_virtual() {;}
 #include <ByteStreamBuffer.h>
 #include <Crc32.cpp>
 #include <Crc32.h>
+#include <DeviceTalker.cpp>
 #include <DeviceTalker.h>
 #include <Encrypter.cpp>
 #include <Encrypter.h>
+#include <KeyVerifier.h>
 #include <MD5.cpp>
 #include <MD5.h>
 #include <Main.cpp>

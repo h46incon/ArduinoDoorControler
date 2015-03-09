@@ -122,5 +122,11 @@
     <ClCompile Include="MD5.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="KeyVerifier.h">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceTalker.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
