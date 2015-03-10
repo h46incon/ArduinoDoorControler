@@ -13,8 +13,7 @@
 class DeviceTalker{
 public:
 	typedef void(*OutPutHandler)(const char* output, size_t len, void* param);
-	// The key_buf's content may be modify
-	typedef bool(*OpenDoorHandler)(char* key_buf, size_t len, void* param);
+	typedef bool(*OpenDoorHandler)(const char* key_buf, size_t len, void* param);
 
 	DeviceTalker();
 

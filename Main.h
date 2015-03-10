@@ -5,6 +5,7 @@
 #include "ServoControl.h"
 #include "BTManager.h"
 #include "DeviceTalker.h"
+#include "KeyVerifier.h"
 
 class Main{
 public:
@@ -15,7 +16,7 @@ public:
 private:
 	void HandlerSimpleCommand();
 	void HandlerStreamCommand();
-	static bool OpenDoorHandler(const char*key, size_t key_len, void* param);
+	static bool OpenDoorHandler(const char*key_buf, size_t key_len, void* param);
 	static void OutPutHandler(const char* data, size_t len, void* param);
 
 	SleepManager sleep_manager_;
@@ -23,13 +24,16 @@ private:
 	BTManager bt_manager_;
 	DeviceTalker device_talker_;
 
+	KeyVerifier opendoor_keyverifier_;
+	static const char * kDefaultOpenDoorKey_;
+	static const int kKeyAddr = 0;		// key address in EEPROM
+
 	bool is_in_stream_mode_;
 
 	static const int kMacAddrSize = 6;
 	unsigned char my_bt_addr_[kMacAddrSize];
 	static const size_t input_buf_size_ = 32;
 	char input_buffer_[input_buf_size_];
-
 
 	static const uint8_t cRequireSimpleResponse = 0x38;
 	static const uint8_t cDeviceSimpleResponse = 0x83;

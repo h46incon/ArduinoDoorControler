@@ -1,10 +1,12 @@
 #include "Main.h"
 
+#include "Utility.h"
+#include "MD5.h"
+
 #include <Arduino.h>
 #include <Servo.h>
 #include <avr/sleep.h>
 #include <stdlib.h>
-#include "Utility.h"
 
 int release_anger = 60;
 int press_anger = 10;
@@ -22,20 +24,26 @@ unsigned long bt_baud = 9600UL;
 unsigned long keep_wake_time = 1000UL * 180UL;
 unsigned long wake_time = 0;
 
+const char * Main::kDefaultOpenDoorKey_ =  "367429";
 
 Main::Main() 
 : sleep_manager_(bt_state_pin, bt_IRQn, led_pin)
 , servo_control_(servo_pin, press_anger, release_anger)
 , bt_manager_( bt_key_pin, bt_baud)
+, opendoor_keyverifier_(kKeyAddr)
 {
 
 }
 
-bool Main::OpenDoorHandler(const char*key, size_t key_len, void* param)
+
+bool Main::OpenDoorHandler(const char*key_buf, size_t key_len, void* param)
 {
 	Main* this_ = (Main*)param;
-	this_->servo_control_.OpenDoor();
-	return true;
+	if (this_->opendoor_keyverifier_.VerifyKey(key_buf, key_len))
+	{
+		this_->servo_control_.OpenDoor();
+		return true;
+	}
 }
 
 
@@ -52,10 +60,15 @@ void Main::setup()
 
 	srand(analogRead(2));
 
+	// NOTE: debug
+	// Serial.begin(9600);
+
+	opendoor_keyverifier_.Init(kDefaultOpenDoorKey_, strlen(kDefaultOpenDoorKey_));
 	sleep_manager_.Init();
 	servo_control_.Init();
 	bt_manager_.Init();
 	wake_time = millis();
+
 
 	LOG(F("Init Completed\n"));
 	bt_manager_.GetMac(my_bt_addr_);
@@ -70,7 +83,6 @@ void Main::setup()
 	device_talker_.setMacAddr((uint8_t*)my_bt_addr_);
 	device_talker_.setOpenDoorHandler(OpenDoorHandler, this);
 	device_talker_.setOutPutHandler(OutPutHandler, this);
-	// TODO: set key
 	is_in_stream_mode_ = false;
 
 	// NOTE: debug
@@ -78,6 +90,9 @@ void Main::setup()
 	//uint8_t data[] = { 0xFD, 0xB1, 0x85, 0x40, 0x00, 0x0B, 0x96, 0x97, 0x23, 0x9A, 0xB8, 0x70, 0xFF, 0x40, 0x85, 0xB1, 0xFD };
 	//device_talker_.onDataInput((const char*)data, 17);
 	// delay(2000);
+
+	// wait for init
+	delay(1000);
 
 	sleep_manager_.TryEnterSleep();
 }
@@ -154,3 +169,4 @@ void Main::HandlerStreamCommand()
 	device_talker_.onDataInput(input_buffer_, input_len);
 			// The out put will be send in OutPutHandler
 }
+

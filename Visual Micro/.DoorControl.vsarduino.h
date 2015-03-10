@@ -92,6 +92,7 @@ extern "C" void __cxa_pure_virtual() {;}
 #include <DeviceTalker.h>
 #include <Encrypter.cpp>
 #include <Encrypter.h>
+#include <KeyVerifier.cpp>
 #include <KeyVerifier.h>
 #include <MD5.cpp>
 #include <MD5.h>

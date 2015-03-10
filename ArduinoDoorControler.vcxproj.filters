@@ -128,5 +128,8 @@
     <ClCompile Include="DeviceTalker.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="KeyVerifier.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -104,6 +104,7 @@
     <ClCompile Include="Crc32.cpp" />
     <ClCompile Include="DeviceTalker.cpp" />
     <ClCompile Include="Encrypter.cpp" />
+    <ClCompile Include="KeyVerifier.cpp" />
     <ClCompile Include="KeyVerifier.h" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MD5.cpp" />

@@ -42,7 +42,7 @@ StreamSplitter::ByteBuffer* DeviceTalker::onOpenDoor(ByteBuffer& key)
 	if (open_door_handler_ != NULL)
 	{
 		open_success = open_door_handler_(
-			(char*)key.GetArray() + key.GetPosition(),
+			(const char*)key.GetArray() + key.GetPosition(),
 			key.remaining(),
 			open_door_handler_param_);
 	}
