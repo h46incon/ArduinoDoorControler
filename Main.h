@@ -29,6 +29,7 @@ private:
 	static const int kKeyAddr = 0;		// key address in EEPROM
 
 	bool is_in_stream_mode_;
+	bool need_open_door_;
 
 	static const int kMacAddrSize = 6;
 	unsigned char my_bt_addr_[kMacAddrSize];

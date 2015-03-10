@@ -31,6 +31,7 @@ Main::Main()
 , servo_control_(servo_pin, press_anger, release_anger)
 , bt_manager_( bt_key_pin, bt_baud)
 , opendoor_keyverifier_(kKeyAddr)
+, need_open_door_(false)
 {
 
 }
@@ -41,7 +42,8 @@ bool Main::OpenDoorHandler(const char*key_buf, size_t key_len, void* param)
 	Main* this_ = (Main*)param;
 	if (this_->opendoor_keyverifier_.VerifyKey(key_buf, key_len))
 	{
-		this_->servo_control_.OpenDoor();
+		this_->need_open_door_ = true;
+		//this_->servo_control_.OpenDoor();
 		return true;
 	}
 }
@@ -84,6 +86,7 @@ void Main::setup()
 	device_talker_.setOpenDoorHandler(OpenDoorHandler, this);
 	device_talker_.setOutPutHandler(OutPutHandler, this);
 	is_in_stream_mode_ = false;
+	need_open_door_ = false;
 
 	// NOTE: debug
 	//Serial.println("input data");
@@ -107,6 +110,13 @@ void Main::loop()
 		}
 		else{
 			HandlerSimpleCommand();
+		}
+
+		// Check nned open door
+		if (need_open_door_)
+		{
+			need_open_door_ = false;
+			servo_control_.OpenDoor();
 		}
 	}
 
