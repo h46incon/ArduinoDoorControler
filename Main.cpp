@@ -11,10 +11,12 @@
 int release_anger = 60;
 int press_anger = 10;
 int servo_pin = 9;
+int servo_en_pin = 11;
 int led_pin = 13;    // LED is used to stands for running or sleeping state
 //int bt_enable_pin = 7;
 int bt_key_pin = 6;
 int bt_state_pin = 2;
+int bt_reset_pin = 3;
 int bt_IRQn = 0;    // IRQn for pin2
 unsigned long bt_baud = 9600UL;
 
@@ -28,8 +30,8 @@ const char * Main::kDefaultOpenDoorKey_ =  "367429";
 
 Main::Main() 
 : sleep_manager_(bt_state_pin, bt_IRQn, led_pin)
-, servo_control_(servo_pin, press_anger, release_anger)
-, bt_manager_( bt_key_pin, bt_baud)
+, servo_control_(servo_pin, servo_en_pin, press_anger, release_anger)
+, bt_manager_( bt_key_pin, bt_reset_pin, bt_baud)
 , opendoor_keyverifier_(kKeyAddr)
 , need_open_door_(false)
 {

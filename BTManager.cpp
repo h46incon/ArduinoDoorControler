@@ -2,8 +2,9 @@
 #include "Utility.h"
 
 #include <Arduino.h>
-BTManager::BTManager(int key_pin, unsigned long baud)
-	: key_pin_(key_pin), communicate_baud_(baud)
+
+BTManager::BTManager(int key_pin, int reset_pin, unsigned long baud)
+	: key_pin_(key_pin), reset_pin_(reset_pin), communicate_baud_(baud)
 {
 
 }
@@ -12,7 +13,9 @@ void BTManager::Init( )
 {
 	// BlueTooth Setting
 	pinMode(key_pin_, OUTPUT);
+	pinMode(reset_pin_, OUTPUT);
 
+	digitalWrite(reset_pin_, HIGH);
 	EnterCommunicationMode();	
 
 	// Enable uart
@@ -21,19 +24,23 @@ void BTManager::Init( )
 
 bool BTManager::Reset()
 {
-	if (EnterATMode()){
-		Serial.print(F("AT+RESET\r\n"));
-		Serial.flush();
-		// Make sure command have been run
-		ReadATCmdReturn();
-		// TODO: HC-05 may enter AT mode when reset
-		EnterCommunicationMode();
+	digitalWrite(reset_pin_, LOW);
+	delay(100);
+	digitalWrite(reset_pin_, HIGH);
+	return true;
+	//if (EnterATMode()){
+	//	Serial.print(F("AT+RESET\r\n"));
+	//	Serial.flush();
+	//	// Make sure command have been run
+	//	ReadATCmdReturn();
+	//	// TODO: HC-05 may enter AT mode when reset
+	//	EnterCommunicationMode();
 
-		return true;
-	} else{
-		EnterCommunicationMode();
-		return false;
-	}
+	//	return true;
+	//} else{
+	//	EnterCommunicationMode();
+	//	return false;
+	//}
 
 }
 

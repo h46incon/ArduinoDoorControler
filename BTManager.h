@@ -5,7 +5,7 @@
 class BTManager{
 public:
 	static const int kMacAddrSize = 6;
-	BTManager(int key_pin, unsigned long baud);
+	BTManager(int key_pin, int reset_pin, unsigned long baud);
 	void Init();
 	bool Reset();
 	bool GetMac(unsigned char buffer[kMacAddrSize]);
@@ -33,6 +33,7 @@ private:
 
 	static const int kBufSize = 64;
 	const int key_pin_;
+	const int reset_pin_;
 	const unsigned long communicate_baud_;
 
 	char buffer_[kBufSize];
