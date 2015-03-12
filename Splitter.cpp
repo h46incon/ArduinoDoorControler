@@ -139,10 +139,10 @@ startBytesFinder(format.startBytes, format.start_bytes_len)
 }
 
 
-Splitter::Splitter(const PackageFormat& format) : Splitter(format, kDefaultInitBufSize)
-{
-
-}
+//Splitter::Splitter(const PackageFormat& format) : Splitter(format, kDefaultInitBufSize)
+//{
+//
+//}
 
 void StreamSplitter::Splitter::reset()
 {

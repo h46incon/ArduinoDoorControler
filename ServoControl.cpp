@@ -37,6 +37,7 @@ void ServoControl::Init()
 	Enable();
 	delay(kDelayForServo);
 	Disable();
+	servo_.detach();
 }
 
 void ServoControl::OpenDoor()
@@ -51,4 +52,5 @@ void ServoControl::OpenDoor()
 	delay(kDelayForServo);
 
 	Disable();
+	servo_.detach();
 }

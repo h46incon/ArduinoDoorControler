@@ -30,7 +30,7 @@ namespace StreamSplitter{
 			void* lenGetterParam;
 		};
 
-		Splitter(const PackageFormat& format);
+		//Splitter(const PackageFormat& format);
 
 		Splitter(const PackageFormat& format, size_t init_buf_size);
 

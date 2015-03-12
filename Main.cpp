@@ -14,16 +14,16 @@ int servo_pin = 9;
 int servo_en_pin = 11;
 int led_pin = 13;    // LED is used to stands for running or sleeping state
 //int bt_enable_pin = 7;
-int bt_key_pin = 6;
-int bt_state_pin = 2;
-int bt_reset_pin = 3;
-int bt_IRQn = 0;    // IRQn for pin2
+int bt_key_pin = 2;
+int bt_state_pin = 3;
+int bt_reset_pin = 4;
+int bt_IRQn = 1;    // IRQn for pin2
 unsigned long bt_baud = 9600UL;
 
-// Bluetooth will keep connected state for 3 minutes. 
-// If this connection could not finish work in 3 minutes, then means some errors have happened.
+// Bluetooth will keep connected state for 2 minutes. 
+// If this connection could not finish work in 2 minutes, then means some errors have happened.
 // Then need to restart the bluetooth device.
-unsigned long keep_wake_time = 1000UL * 180UL;
+unsigned long keep_wake_time = 1000UL * 120UL;
 unsigned long wake_time = 0;
 
 const char * Main::kDefaultOpenDoorKey_ =  "367429";
@@ -47,6 +47,10 @@ bool Main::OpenDoorHandler(const char*key_buf, size_t key_len, void* param)
 		this_->need_open_door_ = true;
 		//this_->servo_control_.OpenDoor();
 		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
