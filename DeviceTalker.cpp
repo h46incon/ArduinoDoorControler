@@ -50,7 +50,7 @@ StreamSplitter::ByteBuffer* DeviceTalker::onOpenDoor(ByteBuffer& key)
 	// generate output
 	data_buf_.clear();
 	data_buf_.put(
-		open_success ? cOpenDoorSuccess : cOpenDoorKeyError);
+		open_success ? cCmdSuccess : cKeyError);
 	data_buf_.flip();
 
 	return packData();
@@ -84,6 +84,12 @@ StreamSplitter::ByteBuffer* DeviceTalker::CommandHandler(ByteBuffer& cmd)
 	default:
 		return GetErrorCmdRepsond();
 	}
+}
+
+void DeviceTalker::setChangeKeyHandler(ChangeKeyHandler handler, void* param)
+{
+	this->changekey_handler_ = handler;
+	this->changekey_handler_param_ = param;
 }
 
 void DeviceTalker::PrivateMessageHandler(ByteBuffer& package)
@@ -149,7 +155,11 @@ void* DeviceTalker::onDataInput(const char* input, size_t len)
 DeviceTalker::DeviceTalker() :
 data_buf_((uint8_t*)malloc(max_stream_buf_len), max_stream_buf_len),
 package_buf_((uint8_t*)malloc(max_stream_buf_len), max_stream_buf_len),
-temp_bb_struct_(NULL, 0)
+temp_bb_struct_(NULL, 0),
+open_door_handler_(NULL),
+output_handler_(NULL),
+changekey_handler_(NULL)
 {
 
 }
+

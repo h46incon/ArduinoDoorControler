@@ -13,7 +13,11 @@
 class DeviceTalker{
 public:
 	typedef void(*OutPutHandler)(const char* output, size_t len, void* param);
-	typedef bool(*OpenDoorHandler)(const char* key_buf, size_t len, void* param);
+	typedef bool(*OpenDoorHandler)(const char* key, size_t len, void* param);
+	typedef bool(*ChangeKeyHandler)
+		(const char* new_key, size_t new_key_len, 
+		const char* old_key, size_t old_key_len,
+		const char* super_key, size_t super_key_len, void* param);
 
 	DeviceTalker();
 
@@ -24,6 +28,7 @@ public:
 	void setKey2(uint8_t key);
 
 	void setOpenDoorHandler(OpenDoorHandler handler, void* param);
+	void setChangeKeyHandler(ChangeKeyHandler handler, void* param);
 
 	void setOutPutHandler(OutPutHandler handler, void* param);
 
@@ -65,12 +70,15 @@ private:
 	void* open_door_handler_param_;
 	OutPutHandler output_handler_;
 	void* output_handler_param_;
+	ChangeKeyHandler changekey_handler_;
+	void* changekey_handler_param_;
 
 	static const uint8_t cCommandResonse = 0xFF;
 	static const uint8_t cCommandError = 0xFD;
 	static const uint8_t cRequireVerify = 0xBC;
 	static const uint8_t cOpenDoor = 0x69;
-	static const uint8_t cOpenDoorSuccess = 0x96;
-	static const uint8_t cOpenDoorKeyError = 0x99;
+	static const uint8_t cChangeKey = 0x69;
+	static const uint8_t cCmdSuccess = 0x96;
+	static const uint8_t cKeyError = 0x99;
 };
 #endif
