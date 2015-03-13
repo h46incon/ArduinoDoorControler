@@ -58,6 +58,7 @@ StreamSplitter::ByteBuffer* DeviceTalker::GetDeviceVerifyMsg()
 StreamSplitter::ByteBuffer* DeviceTalker::onOpenDoor(ByteBuffer& cmd)
 {
 	bool is_success = false;
+
 	if (open_door_handler_ != NULL)
 	{
 		KeyInfo key;
@@ -85,14 +86,55 @@ StreamSplitter::ByteBuffer* DeviceTalker::MakeKeyFeedBackMessage(bool is_success
 
 StreamSplitter::ByteBuffer* DeviceTalker::onChangeKey(ByteBuffer& cmd)
 {
-	// TODO:
-	return NULL;
+	bool is_success = false;
+	// Use While loop so I can break in the inner code
+	while (changekey_handler_ != NULL)
+	{
+		KeyInfo admin_key;
+		KeyInfo old_key;
+		KeyInfo new_key;
+		if (!TryGetKeyInfo(cmd, admin_key))
+		{
+			break;
+		}
+		if (!TryGetKeyInfo(cmd, old_key))
+		{
+			break;
+		}
+		if (!TryGetKeyInfo(cmd, new_key))
+		{
+			break;
+		}
+		
+		is_success = changekey_handler_(admin_key, old_key, new_key, changekey_handler_param_);
+		break;
+	}
+
+	return MakeKeyFeedBackMessage(is_success);
 }
 
 StreamSplitter::ByteBuffer* DeviceTalker::onChangeAdminKey(ByteBuffer& cmd)
 {
-	// TODO:
-	return NULL;
+	bool is_success = false;
+	// Use While loop so I can break in the inner code
+	while (changeadminkey_handler_ != NULL)
+	{
+		KeyInfo old_admin_key;
+		KeyInfo new_admin_key;
+		if (!TryGetKeyInfo(cmd, old_admin_key))
+		{
+			break;
+		}
+		if (!TryGetKeyInfo(cmd, new_admin_key))
+		{
+			break;
+		}
+		
+		is_success = changeadminkey_handler_(old_admin_key, new_admin_key, changeadminkey_handler_param_);
+		break;
+	}
+
+	return MakeKeyFeedBackMessage(is_success);
 }
 
 StreamSplitter::ByteBuffer* DeviceTalker::GetErrorCmdRepsond()
