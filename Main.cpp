@@ -26,7 +26,7 @@ unsigned long bt_baud = 9600UL;
 unsigned long keep_wake_time = 1000UL * 120UL;
 unsigned long wake_time = 0;
 
-const char * Main::kDefaultOpenDoorKey_ = "367429";
+const char * Main::kDefaultOpenDoorKey_ = "000000";
 const char * Main::kDefaultAdminKey_ = "000000";
 
 
@@ -34,8 +34,8 @@ Main::Main()
 : sleep_manager_(bt_state_pin, bt_IRQn, led_pin)
 , servo_control_(servo_pin, servo_en_pin, press_anger, release_anger)
 , bt_manager_( bt_key_pin, bt_reset_pin, bt_baud)
-, opendoor_keyverifier_(kKeyAddr)
-, admin_keyverifier_(kAdminKeyAddr)
+, opendoor_keyverifier_(kKeyAddr, kDefaultOpenDoorKey_, strlen(kDefaultOpenDoorKey_))
+, admin_keyverifier_(kAdminKeyAddr, kDefaultAdminKey_, strlen(kDefaultAdminKey_))
 , need_open_door_(false)
 {
 
@@ -109,8 +109,8 @@ void Main::setup()
 	// NOTE: debug
 	// Serial.begin(9600);
 
-	opendoor_keyverifier_.Init(kDefaultOpenDoorKey_, strlen(kDefaultOpenDoorKey_));
-	admin_keyverifier_.Init(kDefaultAdminKey_, strlen(kDefaultAdminKey_));
+	opendoor_keyverifier_.Init();
+	admin_keyverifier_.Init();
 	sleep_manager_.Init();
 	servo_control_.Init();
 	bt_manager_.Init();

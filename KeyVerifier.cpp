@@ -48,23 +48,37 @@ bool KeyVerifier::StoreKey(const char* key, size_t key_size)
 	return VerifyKey(key, key_size);
 }
 
+bool KeyVerifier::ResetKey()
+{
+	// I don's know how to erase eeprom
+	// Just write 0xFF to eeprom
+	// If may set some checksum bit in eeprom block
+	for (int i = 0; i < kMD5Size; ++i)
+	{
+		md5_buf_[i] = 0xFF;
+	}
+	eeprom_write_block(md5_buf_, (void*)eeprom_addr_, kMD5Size);
+	Init();
+	return VerifyKey(default_key_, default_key_size_);
+}
+
 bool KeyVerifier::VerifyKey(const char* key, size_t key_size)
 {
 	GetHashedKey(key, key_size, md5_buf_);
 	return memcmp(hashed_key_, md5_buf_, kMD5Size) == 0;
 }
 
-KeyVerifier::KeyVerifier(size_t eeprom_addr) 
-	: eeprom_addr_(eeprom_addr)
+KeyVerifier::KeyVerifier(size_t eeprom_addr, const char* default_key, size_t default_key_size) 
+	: eeprom_addr_(eeprom_addr), default_key_(default_key), default_key_size_(default_key_size)
 {
 }
 
-void KeyVerifier::Init(const char* default_key, size_t default_key_size)
+void KeyVerifier::Init()
 {
 	eeprom_read_block(hashed_key_, (void*)eeprom_addr_, kMD5Size);
 	if (IsKeyUnSet())
 	{
 		// Use default key instead
-		GetHashedKey(default_key, default_key_size, hashed_key_);
+		GetHashedKey(default_key_, default_key_size_, hashed_key_);
 	}
 }
