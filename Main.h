@@ -16,7 +16,7 @@ public:
 private:
 	void HandlerSimpleCommand();
 	void HandlerStreamCommand();
-	static bool OpenDoorHandler(const char*key_buf, size_t key_len, void* param);
+	static bool OpenDoorHandler(const DeviceTalker::KeyInfo& key_info, void* param);
 	static void OutPutHandler(const char* data, size_t len, void* param);
 
 	SleepManager sleep_manager_;

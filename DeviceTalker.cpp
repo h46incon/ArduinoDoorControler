@@ -25,6 +25,25 @@ StreamSplitter::ByteBuffer* DeviceTalker::packData()
 	return &temp_bb_struct_;
 }
 
+bool DeviceTalker::tryGetKeyInfo(ByteBuffer& message, KeyInfo& output)
+{
+	if (!message.hasRemaining())
+	{
+		return false;
+	}
+	size_t key_len = message.get();
+	if (key_len > message.remaining())
+	{
+		return false;
+	}
+	const size_t pos = message.GetPosition();
+	output.len = key_len;
+	output.key = (char*)message.GetArray() + pos;
+	message.SetPosition(pos + key_len);
+	return true;
+}
+
+
 StreamSplitter::ByteBuffer* DeviceTalker::GetDeviceVerifyMsg()
 {
 	// Put data
@@ -36,15 +55,16 @@ StreamSplitter::ByteBuffer* DeviceTalker::GetDeviceVerifyMsg()
 	return packData();
 }
 
-StreamSplitter::ByteBuffer* DeviceTalker::onOpenDoor(ByteBuffer& key)
+StreamSplitter::ByteBuffer* DeviceTalker::onOpenDoor(ByteBuffer& cmd)
 {
 	bool open_success = false;
 	if (open_door_handler_ != NULL)
 	{
-		open_success = open_door_handler_(
-			(const char*)key.GetArray() + key.GetPosition(),
-			key.remaining(),
-			open_door_handler_param_);
+		KeyInfo key;
+		if (tryGetKeyInfo(cmd, key))
+		{
+			open_success = open_door_handler_(key, open_door_handler_param_);
+		}
 	}
 
 	// generate output
@@ -54,6 +74,19 @@ StreamSplitter::ByteBuffer* DeviceTalker::onOpenDoor(ByteBuffer& key)
 	data_buf_.flip();
 
 	return packData();
+}
+
+
+StreamSplitter::ByteBuffer* DeviceTalker::onChangeKey(ByteBuffer& cmd)
+{
+	// TODO:
+	return NULL;
+}
+
+StreamSplitter::ByteBuffer* DeviceTalker::onChangeAdminKey(ByteBuffer& cmd)
+{
+	// TODO:
+	return NULL;
 }
 
 StreamSplitter::ByteBuffer* DeviceTalker::GetErrorCmdRepsond()
@@ -79,17 +112,14 @@ StreamSplitter::ByteBuffer* DeviceTalker::CommandHandler(ByteBuffer& cmd)
 	case cRequireVerify:
 		return GetDeviceVerifyMsg();
 	case cOpenDoor:
-		// remain in cmd is key
 		return onOpenDoor(cmd);
+	case cChangeKey:
+		return onChangeKey(cmd);
+	case cChangeAdminKey:
+		return onChangeAdminKey(cmd);
 	default:
 		return GetErrorCmdRepsond();
 	}
-}
-
-void DeviceTalker::setChangeKeyHandler(ChangeKeyHandler handler, void* param)
-{
-	this->changekey_handler_ = handler;
-	this->changekey_handler_param_ = param;
 }
 
 void DeviceTalker::PrivateMessageHandler(ByteBuffer& package)
@@ -135,6 +165,19 @@ void DeviceTalker::setOpenDoorHandler(OpenDoorHandler handler, void* param)
 	open_door_handler_param_ = param;
 }
 
+void DeviceTalker::setChangeKeyHandler(ChangeKeyHandler handler, void* param)
+{
+	this->changekey_handler_ = handler;
+	this->changekey_handler_param_ = param;
+}
+
+void DeviceTalker::setChangeAdminKeyHandler(ChangeAdminKeyHandler handler, void* param)
+{
+	this->changeadminkey_handler_ = handler;
+	this->changeadminkey_handler_param_ = param;
+}
+
+
 void DeviceTalker::setKey2(uint8_t key)
 {
 	encrypter_.setKey2(key);
@@ -158,8 +201,8 @@ package_buf_((uint8_t*)malloc(max_stream_buf_len), max_stream_buf_len),
 temp_bb_struct_(NULL, 0),
 open_door_handler_(NULL),
 output_handler_(NULL),
-changekey_handler_(NULL)
+changekey_handler_(NULL),
+changeadminkey_handler_(NULL)
 {
 
 }
-

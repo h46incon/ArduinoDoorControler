@@ -39,10 +39,10 @@ Main::Main()
 }
 
 
-bool Main::OpenDoorHandler(const char*key_buf, size_t key_len, void* param)
+bool Main::OpenDoorHandler(const DeviceTalker::KeyInfo& key_info, void* param)
 {
 	Main* this_ = (Main*)param;
-	if (this_->opendoor_keyverifier_.VerifyKey(key_buf, key_len))
+	if (this_->opendoor_keyverifier_.VerifyKey(key_info.key, key_info.len))
 	{
 		this_->need_open_door_ = true;
 		//this_->servo_control_.OpenDoor();

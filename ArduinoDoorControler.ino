@@ -6,7 +6,6 @@ Main main_program;
 
 void setup() {
 	main_program.setup();
-	delay(1000);
 }
 
 void loop() {

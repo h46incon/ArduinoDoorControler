@@ -12,12 +12,18 @@
 
 class DeviceTalker{
 public:
+	struct KeyInfo
+	{
+		const char* key;
+		size_t len;
+	};
+
 	typedef void(*OutPutHandler)(const char* output, size_t len, void* param);
-	typedef bool(*OpenDoorHandler)(const char* key, size_t len, void* param);
+	typedef bool(*OpenDoorHandler)(const KeyInfo& key, void* param);
 	typedef bool(*ChangeKeyHandler)
-		(const char* new_key, size_t new_key_len, 
-		const char* old_key, size_t old_key_len,
-		const char* super_key, size_t super_key_len, void* param);
+		(const KeyInfo& admin_key, const KeyInfo& old_key, const KeyInfo& new_key, void* param);
+	typedef bool(*ChangeAdminKeyHandler)
+		(const KeyInfo& old_admin_key, const KeyInfo& new_admin_key, void* param);
 
 	DeviceTalker();
 
@@ -29,6 +35,7 @@ public:
 
 	void setOpenDoorHandler(OpenDoorHandler handler, void* param);
 	void setChangeKeyHandler(ChangeKeyHandler handler, void* param);
+	void setChangeAdminKeyHandler(ChangeAdminKeyHandler handler, void* param);
 
 	void setOutPutHandler(OutPutHandler handler, void* param);
 
@@ -37,6 +44,7 @@ public:
 private:
 
 	static void MessageHandler(ByteBuffer& package, void* param);
+	static bool tryGetKeyInfo(ByteBuffer& message, KeyInfo& output);
 
 	void PrivateMessageHandler(ByteBuffer& package);
 
@@ -44,7 +52,9 @@ private:
 
 	StreamSplitter::ByteBuffer* GetErrorCmdRepsond();
 
-	StreamSplitter::ByteBuffer* onOpenDoor(ByteBuffer& key);
+	StreamSplitter::ByteBuffer* onOpenDoor(ByteBuffer& cmd);
+	StreamSplitter::ByteBuffer* onChangeKey(ByteBuffer& cmd);
+	StreamSplitter::ByteBuffer* onChangeAdminKey(ByteBuffer& cmd);
 
 	StreamSplitter::ByteBuffer* GetDeviceVerifyMsg();
 
@@ -72,12 +82,15 @@ private:
 	void* output_handler_param_;
 	ChangeKeyHandler changekey_handler_;
 	void* changekey_handler_param_;
+	ChangeAdminKeyHandler changeadminkey_handler_;
+	void* changeadminkey_handler_param_;
 
 	static const uint8_t cCommandResonse = 0xFF;
 	static const uint8_t cCommandError = 0xFD;
 	static const uint8_t cRequireVerify = 0xBC;
 	static const uint8_t cOpenDoor = 0x69;
-	static const uint8_t cChangeKey = 0x69;
+	static const uint8_t cChangeKey = 0x70;
+	static const uint8_t cChangeAdminKey = 0x71;
 	static const uint8_t cCmdSuccess = 0x96;
 	static const uint8_t cKeyError = 0x99;
 };
