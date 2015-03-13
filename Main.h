@@ -17,6 +17,15 @@ private:
 	void HandlerSimpleCommand();
 	void HandlerStreamCommand();
 	static bool OpenDoorHandler(const DeviceTalker::KeyInfo& key_info, void* param);
+	static bool ChangeKeyHandler(
+		const DeviceTalker::KeyInfo& admin_key,
+		const DeviceTalker::KeyInfo& old_key,
+		const DeviceTalker::KeyInfo& new_key,
+		void* param);
+	static bool ChangeAdminKeyHandler(
+		const DeviceTalker::KeyInfo& old_admin_key,
+		const DeviceTalker::KeyInfo& new_admin_key,
+		void* param);
 	static void OutPutHandler(const char* data, size_t len, void* param);
 
 	SleepManager sleep_manager_;
@@ -25,8 +34,11 @@ private:
 	DeviceTalker device_talker_;
 
 	KeyVerifier opendoor_keyverifier_;
+	KeyVerifier admin_keyverifier_;
 	static const char * kDefaultOpenDoorKey_;
-	static const int kKeyAddr = 0;		// key address in EEPROM
+	static const char * kDefaultAdminKey_;
+	static const int kKeyAddr = 0;			// key address in EEPROM
+	static const int kAdminKeyAddr = 16;	
 
 	bool is_in_stream_mode_;
 	bool need_open_door_;

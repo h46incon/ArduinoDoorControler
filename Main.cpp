@@ -26,13 +26,16 @@ unsigned long bt_baud = 9600UL;
 unsigned long keep_wake_time = 1000UL * 120UL;
 unsigned long wake_time = 0;
 
-const char * Main::kDefaultOpenDoorKey_ =  "367429";
+const char * Main::kDefaultOpenDoorKey_ = "367429";
+const char * Main::kDefaultAdminKey_ = "000000";
+
 
 Main::Main() 
 : sleep_manager_(bt_state_pin, bt_IRQn, led_pin)
 , servo_control_(servo_pin, servo_en_pin, press_anger, release_anger)
 , bt_manager_( bt_key_pin, bt_reset_pin, bt_baud)
 , opendoor_keyverifier_(kKeyAddr)
+, admin_keyverifier_(kAdminKeyAddr)
 , need_open_door_(false)
 {
 
@@ -54,6 +57,26 @@ bool Main::OpenDoorHandler(const DeviceTalker::KeyInfo& key_info, void* param)
 	}
 }
 
+bool Main::ChangeKeyHandler(
+	const DeviceTalker::KeyInfo& admin_key, 
+	const DeviceTalker::KeyInfo& old_key, 
+	const DeviceTalker::KeyInfo& new_key, 
+	void* param)
+{
+	// TODO:
+	return false;
+}
+
+
+bool Main::ChangeAdminKeyHandler(
+	const DeviceTalker::KeyInfo& old_admin_key, 
+	const DeviceTalker::KeyInfo& new_admin_key, 
+	void* param)
+{
+	//TODO:
+	return false;
+}
+
 
 void Main::OutPutHandler(const char* data, size_t len, void* param)
 {
@@ -72,6 +95,7 @@ void Main::setup()
 	// Serial.begin(9600);
 
 	opendoor_keyverifier_.Init(kDefaultOpenDoorKey_, strlen(kDefaultOpenDoorKey_));
+	admin_keyverifier_.Init(kDefaultAdminKey_, strlen(kDefaultAdminKey_));
 	sleep_manager_.Init();
 	servo_control_.Init();
 	bt_manager_.Init();
@@ -91,6 +115,8 @@ void Main::setup()
 	device_talker_.setMacAddr((uint8_t*)my_bt_addr_);
 	device_talker_.setOpenDoorHandler(OpenDoorHandler, this);
 	device_talker_.setOutPutHandler(OutPutHandler, this);
+	device_talker_.setChangeKeyHandler(ChangeKeyHandler, this);
+	device_talker_.setChangeAdminKeyHandler(ChangeAdminKeyHandler, this);
 	is_in_stream_mode_ = false;
 	need_open_door_ = false;
 
@@ -185,4 +211,3 @@ void Main::HandlerStreamCommand()
 	device_talker_.onDataInput(input_buffer_, input_len);
 			// The out put will be send in OutPutHandler
 }
-
