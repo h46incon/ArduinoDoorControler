@@ -63,8 +63,16 @@ bool Main::ChangeKeyHandler(
 	const DeviceTalker::KeyInfo& new_key, 
 	void* param)
 {
-	// TODO:
-	return false;
+	Main* this_ = (Main*)param;
+	if ( this_->admin_keyverifier_.VerifyKey(admin_key.key, admin_key.len)
+		&& this_->opendoor_keyverifier_.VerifyKey(old_key.key, old_key.len) )
+	{
+		this_->opendoor_keyverifier_.StoreKey(new_key.key, new_key.len);
+		return true;
+	}
+	else{
+		return false;
+	}
 }
 
 
@@ -73,8 +81,15 @@ bool Main::ChangeAdminKeyHandler(
 	const DeviceTalker::KeyInfo& new_admin_key, 
 	void* param)
 {
-	//TODO:
-	return false;
+	Main* this_ = (Main*)param;
+	if ( this_->admin_keyverifier_.VerifyKey(old_admin_key.key, old_admin_key.len))
+	{
+		this_->admin_keyverifier_.StoreKey(new_admin_key.key, new_admin_key.len);
+		return true;
+	}
+	else{
+		return false;
+	}
 }
 
 
