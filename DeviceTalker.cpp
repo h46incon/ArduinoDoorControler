@@ -25,7 +25,7 @@ StreamSplitter::ByteBuffer* DeviceTalker::packData()
 	return &temp_bb_struct_;
 }
 
-bool DeviceTalker::tryGetKeyInfo(ByteBuffer& message, KeyInfo& output)
+bool DeviceTalker::TryGetKeyInfo(ByteBuffer& message, KeyInfo& output)
 {
 	if (!message.hasRemaining())
 	{
@@ -57,20 +57,26 @@ StreamSplitter::ByteBuffer* DeviceTalker::GetDeviceVerifyMsg()
 
 StreamSplitter::ByteBuffer* DeviceTalker::onOpenDoor(ByteBuffer& cmd)
 {
-	bool open_success = false;
+	bool is_success = false;
 	if (open_door_handler_ != NULL)
 	{
 		KeyInfo key;
-		if (tryGetKeyInfo(cmd, key))
+		if (TryGetKeyInfo(cmd, key))
 		{
-			open_success = open_door_handler_(key, open_door_handler_param_);
+			is_success = open_door_handler_(key, open_door_handler_param_);
 		}
 	}
 
 	// generate output
+	return MakeKeyFeedBackMessage(is_success);
+}
+
+StreamSplitter::ByteBuffer* DeviceTalker::MakeKeyFeedBackMessage(bool is_success)
+{
+
 	data_buf_.clear();
 	data_buf_.put(
-		open_success ? cCmdSuccess : cKeyError);
+		is_success ? cCmdSuccess : cKeyError);
 	data_buf_.flip();
 
 	return packData();

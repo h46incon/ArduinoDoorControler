@@ -44,7 +44,8 @@ public:
 private:
 
 	static void MessageHandler(ByteBuffer& package, void* param);
-	static bool tryGetKeyInfo(ByteBuffer& message, KeyInfo& output);
+	static bool TryGetKeyInfo(ByteBuffer& message, KeyInfo& output);
+	StreamSplitter::ByteBuffer* MakeKeyFeedBackMessage(bool is_success);
 
 	void PrivateMessageHandler(ByteBuffer& package);
 
