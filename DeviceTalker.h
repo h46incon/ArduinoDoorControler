@@ -86,13 +86,13 @@ private:
 	ChangeAdminKeyHandler changeadminkey_handler_;
 	void* changeadminkey_handler_param_;
 
-	static const uint8_t cCommandResonse = 0xFF;
-	static const uint8_t cCommandError = 0xFD;
+	static const uint8_t cCmdSuccess = 0x96;
+	static const uint8_t cNotACmd = 0xFD;
+	static const uint8_t cKeyError = 0x99;
+
 	static const uint8_t cRequireVerify = 0xBC;
 	static const uint8_t cOpenDoor = 0x69;
 	static const uint8_t cChangeKey = 0x70;
 	static const uint8_t cChangeAdminKey = 0x71;
-	static const uint8_t cCmdSuccess = 0x96;
-	static const uint8_t cKeyError = 0x99;
 };
 #endif

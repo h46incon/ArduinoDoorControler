@@ -48,7 +48,7 @@ StreamSplitter::ByteBuffer* DeviceTalker::GetDeviceVerifyMsg()
 {
 	// Put data
 	data_buf_.clear();
-	data_buf_.put(cCommandResonse);
+	data_buf_.put(cCmdSuccess);
 	data_buf_.put(mac_addr_, kMacAddrSize);
 	data_buf_.flip();
 
@@ -141,7 +141,7 @@ StreamSplitter::ByteBuffer* DeviceTalker::GetErrorCmdRepsond()
 {
 	// Put data
 	data_buf_.clear();
-	data_buf_.put(cCommandError);
+	data_buf_.put(cNotACmd);
 	data_buf_.flip();
 
 	return packData();
