@@ -6,6 +6,7 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include <avr/sleep.h>
+#include <avr/wdt.h>
 #include <stdlib.h>
 
 int release_anger = 60;
@@ -100,6 +101,7 @@ void Main::OutPutHandler(const char* data, size_t len, void* param)
 
 void Main::setup()
 {
+	wdt_disable();
 	// LED Setting
 	pinMode(led_pin, OUTPUT);
 	digitalWrite(led_pin, HIGH);
@@ -109,17 +111,32 @@ void Main::setup()
 	// NOTE: debug
 	// Serial.begin(9600);
 
+	// This init may failed, check it first
+	bt_manager_.Init();
+	bt_manager_.Reset();
+	if (!bt_manager_.GetMac(my_bt_addr_))
+	{
+		// reset after 4 second
+		wdt_enable(WDTO_4S);
+		// Blink 
+		unsigned long time = 500;
+		while (true)
+		{
+			digitalWrite(led_pin, LOW);
+			delay(time);
+			digitalWrite(led_pin, HIGH);
+			delay(time);
+		}
+	}
+
 	opendoor_keyverifier_.Init();
 	admin_keyverifier_.Init();
 	sleep_manager_.Init();
 	servo_control_.Init();
-	bt_manager_.Init();
-	bt_manager_.Reset();
 	wake_time = millis();
 
 
 	LOG(F("Init Completed\n"));
-	bt_manager_.GetMac(my_bt_addr_);
 	// Note: debug
 	//my_bt_addr_[0] = 0x20;
 	//my_bt_addr_[1] = 0x13;
