@@ -14,8 +14,16 @@ public:
 	void loop();
 
 private:
+	void NormalWorkSetup();
+	void FactoryReset();
+	void Reboot();
+	bool CheckNeedFactoryReset();
+
+	static bool CheckIfTimeOut(unsigned long begin_time, unsigned long time_out);
+
 	void HandlerSimpleCommand();
 	void HandlerStreamCommand();
+
 	static bool OpenDoorHandler(const DeviceTalker::KeyInfo& key_info, void* param);
 	static bool ChangeKeyHandler(
 		const DeviceTalker::KeyInfo& admin_key,

@@ -14,7 +14,9 @@ int release_anger = 60;
 int press_anger = 10;
 int servo_pin = 9;
 int servo_en_pin = 11;
-int led_pin = 13;    // LED is used to stands for running or sleeping state
+int led_pin = 13;					// LED is used to stands for running or sleeping state
+int factory_reset_detect_pin = 7;	// Detect if user press reset button when power up device
+
 //int bt_enable_pin = 7;
 int bt_key_pin = 2;
 int bt_state_pin = 3;
@@ -103,6 +105,18 @@ void Main::OutPutHandler(const char* data, size_t len, void* param)
 void Main::setup()
 {
 	wdt_disable();
+	if (CheckNeedFactoryReset())
+	{
+		FactoryReset();
+		Reboot();
+	}
+	else{
+		NormalWorkSetup();
+	}
+}
+
+void Main::NormalWorkSetup()
+{
 	// LED Setting
 	pinMode(led_pin, OUTPUT);
 	digitalWrite(led_pin, HIGH);
@@ -117,17 +131,7 @@ void Main::setup()
 	bt_manager_.Reset();
 	if (!bt_manager_.GetMac(my_bt_addr_))
 	{
-		// reset after 4 second
-		wdt_enable(WDTO_4S);
-		// Blink 
-		unsigned long time = 500;
-		while (true)
-		{
-			digitalWrite(led_pin, LOW);
-			delay(time);
-			digitalWrite(led_pin, HIGH);
-			delay(time);
-		}
+		Reboot();
 	}
 
 	opendoor_keyverifier_.Init();
@@ -166,6 +170,12 @@ void Main::setup()
 	sleep_manager_.TryEnterSleep();
 }
 
+void Main::FactoryReset()
+{
+	opendoor_keyverifier_.ResetKey();
+	admin_keyverifier_.ResetKey();
+}
+
 void Main::loop()
 {
 	while (Serial.available() > 0)
@@ -178,7 +188,7 @@ void Main::loop()
 			HandlerSimpleCommand();
 		}
 
-		// Check nned open door
+		// Check need open door
 		if (need_open_door_)
 		{
 			need_open_door_ = false;
@@ -190,7 +200,7 @@ void Main::loop()
 	if (sleep_manager_.TryEnterSleep() == false){
 		// Fail to enter sleep means bluetooth is still in contected state
 		// Check if it is reach the timeout
-		if (millis() - wake_time > keep_wake_time){    // Use subtraction will get correct answer even if millis() is overflowed.
+		if (CheckIfTimeOut(wake_time, keep_wake_time)){
 			LOG(F("Resetting Bluetooth...\n"));
 			bt_manager_.Reset();
 			wake_time = millis();
@@ -199,12 +209,12 @@ void Main::loop()
 		}
 	}
 	else {
+		// Wake from sleep
 		device_talker_.reset();
 		is_in_stream_mode_ = false;
 		wake_time = millis();
 		//Serial.println("Wake up from sleeping");
 		// hand shake message may missing.
-		// openDoor();
 	}
 
 }
@@ -244,4 +254,32 @@ void Main::HandlerStreamCommand()
 
 	device_talker_.onDataInput(input_buffer_, input_len);
 			// The out put will be send in OutPutHandler
+}
+
+void Main::Reboot()
+{
+	// reset after 4 second
+	wdt_enable(WDTO_4S);
+	// Blink 
+	unsigned long time = 500;
+	while (true)
+	{
+		digitalWrite(led_pin, LOW);
+		delay(time);
+		digitalWrite(led_pin, HIGH);
+		delay(time);
+	}
+}
+
+bool Main::CheckNeedFactoryReset()
+{
+	pinMode(factory_reset_detect_pin, INPUT_PULLUP);
+	// TODO:
+	return false;
+}
+
+bool Main::CheckIfTimeOut(unsigned long begin_time, unsigned long time_out)
+{
+	// Use subtraction will get correct answer even if millis() is overflowed.
+	return (millis() - begin_time > time_out);
 }
