@@ -41,10 +41,10 @@ void KeyVerifier::GetHashedKey(const char* key, size_t key_len, uint8_t* output)
 bool KeyVerifier::StoreKey(const char* key, size_t key_size)
 {
 	GetHashedKey(key, key_size, md5_buf_);
-	eeprom_write_block(md5_buf_, (void*)eeprom_addr_, kMD5Size);
+	WriteHashedKey(md5_buf_);
 
 	// read back to hashed_key_, and check
-	eeprom_read_block((void*)eeprom_addr_, hashed_key_, kMD5Size);
+	ReadHashedKey(hashed_key_);
 	return VerifyKey(key, key_size);
 }
 
@@ -57,7 +57,7 @@ bool KeyVerifier::ResetKey()
 	{
 		md5_buf_[i] = 0xFF;
 	}
-	eeprom_write_block(md5_buf_, (void*)eeprom_addr_, kMD5Size);
+	WriteHashedKey(md5_buf_);
 	Init();
 	return VerifyKey(default_key_, default_key_size_);
 }
@@ -75,10 +75,20 @@ KeyVerifier::KeyVerifier(size_t eeprom_addr, const char* default_key, size_t def
 
 void KeyVerifier::Init()
 {
-	eeprom_read_block(hashed_key_, (void*)eeprom_addr_, kMD5Size);
+	ReadHashedKey(hashed_key_);
 	if (IsKeyUnSet())
 	{
 		// Use default key instead
 		GetHashedKey(default_key_, default_key_size_, hashed_key_);
 	}
+}
+
+void KeyVerifier::ReadHashedKey(uint8_t* target_addr)
+{
+	eeprom_read_block(target_addr, (void*)eeprom_addr_, kMD5Size);
+}
+
+void KeyVerifier::WriteHashedKey(uint8_t* src_addr)
+{
+	eeprom_write_block(src_addr, (void*)eeprom_addr_, kMD5Size);
 }

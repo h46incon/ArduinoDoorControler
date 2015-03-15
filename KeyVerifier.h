@@ -18,6 +18,8 @@ public:
 	bool ResetKey();
 	
 private:
+	void ReadHashedKey(uint8_t* target_addr);
+	void WriteHashedKey(uint8_t* src_addr);
 	static void GetHashedKey(const char* key, size_t key_len, uint8_t* output);
 
 	bool IsKeyUnSet();
