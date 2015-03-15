@@ -114,6 +114,7 @@ void Main::setup()
 	sleep_manager_.Init();
 	servo_control_.Init();
 	bt_manager_.Init();
+	bt_manager_.Reset();
 	wake_time = millis();
 
 
