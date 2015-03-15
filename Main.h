@@ -20,6 +20,7 @@ private:
 	bool CheckNeedFactoryReset();
 
 	static bool CheckIfTimeOut(unsigned long begin_time, unsigned long time_out);
+	static void InitLedPin();
 
 	void HandlerSimpleCommand();
 	void HandlerStreamCommand();
@@ -70,6 +71,7 @@ private:
 	static const uint8_t cDeviceSimpleResponse = 0x83;
 	static const uint8_t cEnterStreamCommunicate = 0x76;
 
+	static const unsigned long kFactoryResetButtonFiliteTime = 5000;
 
 };
 #endif

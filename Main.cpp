@@ -15,6 +15,7 @@ int press_anger = 10;
 int servo_pin = 9;
 int servo_en_pin = 11;
 int led_pin = 13;					// LED is used to stands for running or sleeping state
+int alarm_led_pin = 5;				// LED to show some alarm
 int factory_reset_detect_pin = 7;	// Detect if user press reset button when power up device
 
 //int bt_enable_pin = 7;
@@ -105,6 +106,7 @@ void Main::OutPutHandler(const char* data, size_t len, void* param)
 void Main::setup()
 {
 	wdt_disable();
+	InitLedPin();
 	if (CheckNeedFactoryReset())
 	{
 		FactoryReset();
@@ -118,7 +120,6 @@ void Main::setup()
 void Main::NormalWorkSetup()
 {
 	// LED Setting
-	pinMode(led_pin, OUTPUT);
 	digitalWrite(led_pin, HIGH);
 
 	srand(analogRead(2));
@@ -174,6 +175,7 @@ void Main::FactoryReset()
 {
 	opendoor_keyverifier_.ResetKey();
 	admin_keyverifier_.ResetKey();
+	// erase whole EEPROM?
 }
 
 void Main::loop()
@@ -261,25 +263,56 @@ void Main::Reboot()
 	// reset after 4 second
 	wdt_enable(WDTO_4S);
 	// Blink 
-	unsigned long time = 500;
+	unsigned long time = 300;
 	while (true)
 	{
-		digitalWrite(led_pin, LOW);
+		digitalWrite(alarm_led_pin, LOW);
 		delay(time);
-		digitalWrite(led_pin, HIGH);
+		digitalWrite(alarm_led_pin, HIGH);
 		delay(time);
 	}
 }
 
 bool Main::CheckNeedFactoryReset()
 {
+	// Check if factory reset button is press
 	pinMode(factory_reset_detect_pin, INPUT_PULLUP);
-	// TODO:
-	return false;
+	if (digitalRead(factory_reset_detect_pin) == HIGH)
+	{
+		return false;
+	}
+
+	// light alarm
+	digitalWrite(alarm_led_pin, HIGH);
+
+	// Check if this button have press for a while.
+	unsigned long beg_time = millis();
+	// Need some filitering?
+	while (!CheckIfTimeOut(beg_time, kFactoryResetButtonFiliteTime))
+	{
+		if (digitalRead(factory_reset_detect_pin) == HIGH)
+		{
+			// Cancel factory reset
+			digitalWrite(alarm_led_pin, LOW);
+			return false;
+		}
+		else{
+			delay(100);
+		}
+	}
+	return true;
 }
 
 bool Main::CheckIfTimeOut(unsigned long begin_time, unsigned long time_out)
 {
 	// Use subtraction will get correct answer even if millis() is overflowed.
 	return (millis() - begin_time > time_out);
+}
+
+void Main::InitLedPin()
+{
+	pinMode(led_pin, OUTPUT);
+	pinMode(alarm_led_pin, OUTPUT);
+	digitalWrite(led_pin, LOW);
+	digitalWrite(alarm_led_pin, LOW);
 }
