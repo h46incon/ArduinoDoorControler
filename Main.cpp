@@ -6,6 +6,7 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include <avr/sleep.h>
+#include <avr/eeprom.h>
 #include <avr/wdt.h>
 #include <stdlib.h>
 

@@ -4,19 +4,6 @@
 #include "MD5.h"
 #include <avr/eeprom.h>
 
-bool KeyVerifier::IsKeyUnSet()
-{
-	for (int i = 0; i < kMD5Size; ++i)
-	{
-		// Read a unwritten location in EEPROM will return 0xFF;
-		if (hashed_key_[i] != 0xFF)
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
 void KeyVerifier::GetHashedKey(const char* key, size_t key_len, uint8_t* output)
 {
 	static const char* salt_key = "nocnincon";
@@ -41,10 +28,11 @@ void KeyVerifier::GetHashedKey(const char* key, size_t key_len, uint8_t* output)
 bool KeyVerifier::StoreKey(const char* key, size_t key_size)
 {
 	GetHashedKey(key, key_size, md5_buf_);
+	eeprom_write_byte((uint8_t*)eeprom_addr_, kValidKeyFlag);
 	WriteHashedKey(md5_buf_);
 
 	// read back to hashed_key_, and check
-	ReadHashedKey(hashed_key_);
+	Init();
 	return VerifyKey(key, key_size);
 }
 
@@ -53,11 +41,18 @@ bool KeyVerifier::ResetKey()
 	// I don's know how to erase eeprom
 	// Just write 0xFF to eeprom
 	// If may set some checksum bit in eeprom block
+
+	// Write flag
+	eeprom_write_byte((uint8_t*)eeprom_addr_, 0xFF);
+
+	// clean data
 	for (int i = 0; i < kMD5Size; ++i)
 	{
 		md5_buf_[i] = 0xFF;
 	}
 	WriteHashedKey(md5_buf_);
+
+	// Reread key
 	Init();
 	return VerifyKey(default_key_, default_key_size_);
 }
@@ -75,9 +70,14 @@ KeyVerifier::KeyVerifier(size_t eeprom_addr, const char* default_key, size_t def
 
 void KeyVerifier::Init()
 {
-	ReadHashedKey(hashed_key_);
-	if (IsKeyUnSet())
+	// check flag
+	uint8_t header = eeprom_read_byte((const uint8_t *)eeprom_addr_);
+	if (header == kValidKeyFlag)
 	{
+		// Read key from EEPROM
+		ReadHashedKey(hashed_key_);
+	}
+	else{
 		// Use default key instead
 		GetHashedKey(default_key_, default_key_size_, hashed_key_);
 	}
@@ -85,10 +85,10 @@ void KeyVerifier::Init()
 
 void KeyVerifier::ReadHashedKey(uint8_t* target_addr)
 {
-	eeprom_read_block(target_addr, (void*)eeprom_addr_, kMD5Size);
+	eeprom_read_block(target_addr, (void*)(eeprom_addr_ + kHeaderSize), kMD5Size);
 }
 
 void KeyVerifier::WriteHashedKey(uint8_t* src_addr)
 {
-	eeprom_write_block(src_addr, (void*)eeprom_addr_, kMD5Size);
+	eeprom_write_block(src_addr, (void*)(eeprom_addr_ + kHeaderSize), kMD5Size);
 }

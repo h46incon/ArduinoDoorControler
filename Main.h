@@ -33,12 +33,22 @@ private:
 	BTManager bt_manager_;
 	DeviceTalker device_talker_;
 
+	struct KeyID{
+		enum KeyIDEnum {
+			OPEN_DOOR = 0,
+			ADMIN,
+			_TOTAL
+		};
+
+	};
+
 	KeyVerifier opendoor_keyverifier_;
 	KeyVerifier admin_keyverifier_;
 	static const char * kDefaultOpenDoorKey_;
 	static const char * kDefaultAdminKey_;
-	static const int kKeyAddr = 0;			// key address in EEPROM
-	static const int kAdminKeyAddr = 16;	
+	// key address in EEPROM
+	static const int kKeyAddr = KeyID::OPEN_DOOR * KeyVerifier::kKeyNeedEepromSize;	
+	static const int kAdminKeyAddr = KeyID::ADMIN * KeyVerifier::kKeyNeedEepromSize;	
 
 	bool is_in_stream_mode_;
 	bool need_open_door_;
