@@ -34,6 +34,10 @@ unsigned long wake_time = 0;
 const char * Main::kDefaultOpenDoorKey_ = "000000";
 const char * Main::kDefaultAdminKey_ = "000000";
 
+#ifndef EEPROM_SIZE
+#define EEPROM_SIZE		1024
+#endif
+
 
 Main::Main() 
 : sleep_manager_(bt_state_pin, bt_IRQn, led_pin)
@@ -173,9 +177,7 @@ void Main::NormalWorkSetup()
 
 void Main::FactoryReset()
 {
-	opendoor_keyverifier_.ResetKey();
-	admin_keyverifier_.ResetKey();
-	// erase whole EEPROM?
+	EraseEEPROM();
 }
 
 void Main::loop()
@@ -315,4 +317,30 @@ void Main::InitLedPin()
 	pinMode(alarm_led_pin, OUTPUT);
 	digitalWrite(led_pin, LOW);
 	digitalWrite(alarm_led_pin, LOW);
+}
+
+void Main::EraseEEPROM()
+{
+	uint8_t sreg, i;
+	uint16_t addr;
+	uint8_t clear[8] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+	uint8_t data[8];
+
+	sreg = SREG;
+	cli();
+
+	// Write page by page using the block writing method
+	for (addr = 0; addr < EEPROM_SIZE; addr += 8)
+	{
+		eeprom_read_block((void *)&data[0], (const void *)addr, 8);
+		for (i = 0; i < 8; i++){
+			if (data[i] != 0xFF)
+			{
+				eeprom_write_block((void*)&clear[0], (void*)addr, 8);
+				break;
+			}
+		}
+	}
+
+	SREG = sreg;
 }

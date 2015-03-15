@@ -21,6 +21,7 @@ private:
 
 	static bool CheckIfTimeOut(unsigned long begin_time, unsigned long time_out);
 	static void InitLedPin();
+	static void EraseEEPROM();
 
 	void HandlerSimpleCommand();
 	void HandlerStreamCommand();
