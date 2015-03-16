@@ -27,6 +27,8 @@ bool BTManager::Reset()
 	digitalWrite(reset_pin_, LOW);
 	delay(100);
 	digitalWrite(reset_pin_, HIGH);
+	// Delay for init
+	delay(2000);
 	return true;
 	//if (EnterATMode()){
 	//	Serial.print(F("AT+RESET\r\n"));
