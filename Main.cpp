@@ -15,7 +15,7 @@ int press_anger = 10;
 int servo_pin = 9;
 int servo_en_pin = 11;
 int led_pin = 13;					// LED is used to stands for running or sleeping state
-int alarm_led_pin = 5;				// LED to show some alarm
+int alarm_led_pin = 6;				// LED to show some alarm
 int factory_reset_detect_pin = 7;	// Detect if user press reset button when power up device
 
 //int bt_enable_pin = 7;
@@ -28,7 +28,7 @@ unsigned long bt_baud = 9600UL;
 // Bluetooth will keep connected state for 2 minutes. 
 // If this connection could not finish work in 2 minutes, then means some errors have happened.
 // Then need to restart the bluetooth device.
-unsigned long keep_wake_time = 1000UL * 120UL;
+unsigned long keep_wake_time = 1000UL * 180UL;
 unsigned long wake_time = 0;
 
 const char * Main::kDefaultOpenDoorKey_ = "000000";
