@@ -127,6 +127,8 @@ void Main::NormalWorkSetup()
 	digitalWrite(led_pin, HIGH);
 
 	srand(analogRead(2));
+	// Turn off ADC for power consumption
+	ADCSRA = 0;
 
 	// NOTE: debug
 	// Serial.begin(9600);
@@ -279,30 +281,45 @@ bool Main::CheckNeedFactoryReset()
 {
 	// Check if factory reset button is press
 	pinMode(factory_reset_detect_pin, INPUT_PULLUP);
-	if (digitalRead(factory_reset_detect_pin) == HIGH)
-	{
-		return false;
-	}
+	bool need_reset = false;
 
-	// light alarm
-	digitalWrite(alarm_led_pin, HIGH);
-
-	// Check if this button have press for a while.
-	unsigned long beg_time = millis();
-	// Need some filitering?
-	while (!CheckIfTimeOut(beg_time, kFactoryResetButtonFiliteTime))
+	// Use do-while to enable break
+	do 
 	{
 		if (digitalRead(factory_reset_detect_pin) == HIGH)
 		{
-			// Cancel factory reset
-			digitalWrite(alarm_led_pin, LOW);
-			return false;
+			need_reset = false;
+			break;
 		}
-		else{
-			delay(100);
+
+		// light alarm
+		digitalWrite(alarm_led_pin, HIGH);
+
+		// Check if this button have press for a while.
+		unsigned long beg_time = millis();
+		// Need some filitering?
+		while (!CheckIfTimeOut(beg_time, kFactoryResetButtonFiliteTime))
+		{
+			if (digitalRead(factory_reset_detect_pin) == HIGH)
+			{
+				// Cancel factory reset
+				digitalWrite(alarm_led_pin, LOW);
+				need_reset = false;
+				break;
+			}
+			else{
+				delay(100);
+			}
 		}
-	}
-	return true;
+
+		need_reset = true;
+
+	} while (false);
+
+	// Power concumption
+	pinMode(factory_reset_detect_pin, OUTPUT);
+	digitalWrite(factory_reset_detect_pin, LOW);
+	return need_reset;
 }
 
 bool Main::CheckIfTimeOut(unsigned long begin_time, unsigned long time_out)
